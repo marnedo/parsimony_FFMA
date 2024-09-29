@@ -302,7 +302,7 @@ treeSPR  <- optim.parsimony(treeRA, parachtes)
 
 
 ``` r
-# heuristic search using random addiiton of taxa
+# compare the length of the trees
 parsimony(c(treeRA, treeSPR), parachtes)
 #> [1] 7894 7893
 ```

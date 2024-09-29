@@ -264,7 +264,7 @@ treeSPR  <- optim.parsimony(treeRA, parachtes)
 ```
 
 ```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE}
-# heuristic search using random addiiton of taxa
+# compare the length of the trees
 parsimony(c(treeRA, treeSPR), parachtes)
 ```
 ## Consensus tree
