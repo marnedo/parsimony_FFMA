@@ -1,0 +1,36 @@
+---
+title: "Intro and parsimony exercises FFMA"
+author: "Miquel Arnedo"
+date: "2024-09-29"
+output:
+  html_document:
+    keep_md: true
+---
+
+# Reconstructing the Past {#ch09}
+
+```{r html-doc, child="html_doc.Rmd", echo = FALSE}
+```
+
+```{r setup, include=FALSE}
+source("setup.R")
+```
+
+
+
+```{r, eval = FALSE, echo = TRUE, results = "hide", message = FALSE, warning = FALSE}
+# clear the R environment
+rm(list = ls())
+
+# install new packages
+install.packages("ape")
+install.packages("phangorn")
+install.packages("tidyverse")
+
+# load packages
+library(ape)
+library(phangorn)
+library(tidyverse)
+```
+
+
