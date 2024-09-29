@@ -21,10 +21,12 @@ library(phangorn)
 library(tidyverse)
 ```
 
-In this tutorial, we will introduce phylogenetics  as a means to visualise the evolutionary relationships among species and will coduct our first phylogenetic analyses using parismony as method of inference
+### Credits
+This exercise is based on the R tutorial for course [BIOS1140](https://bios1140.github.io/) at the University of Oslo aand examples provided in the github of [`phangorn`](https://github.com/KlausVigo/phangorn/blob/master/vignettes/Morphological.Rmd) by Klaus Schliep
+
 
 ### What to expect {.unnumbered}
-
+In this tutorial, we will introduce phylogenetics  as a means to visualise the evolutionary relationships among species and will coduct our first phylogenetic analyses using parismony as method of inference
 In this section we will:
 
 -   learn some tools for visualising phylogenetic trees
