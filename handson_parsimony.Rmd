@@ -7,8 +7,18 @@ output:
     keep_md: true
 ---
 
+```{r html-doc, echo = FALSE}
+```
+
 ```{r setup, include=FALSE}
 source("setup.R")
+library(tidyverse)
+```
+
+```{r, eval = TRUE, echo = FALSE, message=FALSE, warning = FALSE}
+library(ape)
+library(phangorn)
+library(tidyverse)
 ```
 
 In this tutorial, we will introduce phylogenetics  as a means to visualise the evolutionary relationships among species and will coduct our first phylogenetic analyses using parismony as method of inference
@@ -24,7 +34,6 @@ In this section we will:
 
 First, we need to set up our R environment. We'll load `tidyverse` a package that facilitaes dta amaipulation and visualization. aalong a few more packages today to help us handle different types of data. Chief among these is `ape` which is the basis for a lot of phylogenetic analysis in R. We will also load another phylogenetic package, `phangorn` (which has an extremely [geeky reference](https://en.wikipedia.org/wiki/Fangorn) in its name).
 
-
 ```{r, eval = FALSE, echo = TRUE, results = "hide", message = FALSE, warning = FALSE}
 # clear the R environment
 rm(list = ls())
@@ -39,13 +48,13 @@ library(ape)
 library(phangorn)
 library(tidyverse)
 ```
+
 With these packages installed, we are ready to begin!
 
 ## Phylogenetics in R
 
 ```{r html-doc, echo = FALSE}
 ```
-
 
 R has a number of extremely powerful packages for performing phylogenetic analysis, from plotting trees to testing comparative models of evolution. You can see [here](https://cran.r-project.org/web/views/Phylogenetics.html) for more information if you are interested in learning about what sort of things are possible. For today's session, we will learn how to handle and visualise phylogenetic trees in R. We will also construct a series of trees from a sequence alignment. First, let's familiarise ourselves with how R handles phylogenetic data.
 
@@ -86,6 +95,7 @@ It is of course, much easier to understand a tree when we visualise it. Luckily 
 ```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE}
 plot(tree)
 ```
+
 In the next section, we will learn more about how to plot trees.
 
 ### Plotting trees
@@ -171,6 +181,7 @@ plot(neoaves, no.margin = TRUE)
 
 The functions provided by `ape` make it quite easy to handle phylogenies in R, feel free to experiment further to find out what you can do!
 
+
 ### Inferring trees with R using parsimony
 
 So far, we have only looked at examples of trees that are already constructed in some way. However, if you are working with your own data, this is not the case - you need to actually make the tree yourself. Luckily, `phangorn` is ideally suited for this. We will use some data, bundled with the package, for the next steps. In this example, we will investigate the phylogenetic relationships of Parachtes—a genus belonging to the spider family Dysderidae by using a concatenated matrix of 6 mtDNA genes, namely cox1, nad1, 16S and 12S and 3 nuclear genes, 18S, 28S and Hisotne3, obtained from Genbank. The following code loads the data:
@@ -178,7 +189,7 @@ So far, we have only looked at examples of trees that are already constructed in
                         
 ::: {.yellow}
 ```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE}
-# get phangorn primates data
+# get parachtes data
 parachtes <- read.phyDat("ParALL153.fas", format = "fasta")
 ```
 :::
@@ -188,9 +199,9 @@ The function most users want to use to infer phylogenies with MP (maximum parsim
 The current implementation is
 
 1 Create a bootstrap data set 𝐷𝑏from the original data set.
-1 Take the current best tree and perform tree rearrangements on 𝐷𝑏and save bootstrap tree as 𝑇𝑏.
-1 Use 𝑇𝑏and perform tree rearrangements on the original data set. If this tree has a lower parsimony score than the currently best tree, replace it.
-1 Iterate 1:3 until either a given number of iteration is reached (minit) or no improvements have been recorded for a number of iterations (k).
+2 Take the current best tree and perform tree rearrangements on 𝐷𝑏and save bootstrap tree as 𝑇𝑏.
+3 Use 𝑇𝑏and perform tree rearrangements on the original data set. If this tree has a lower parsimony score than the currently best tree, replace it.
+4 Iterate 1:3 until either a given number of iteration is reached (minit) or no improvements have been recorded for a number of iterations (k).
 
 ```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE}
 # perform model selection
@@ -203,6 +214,7 @@ Now that we have inferrred the MP tree, we should plot it to have a look.
 # plot MP tree
 plot(treeRatchet,no.margin = TRUE)
 ```
+
 Notice that so far we have not define which species is the outgroup for the analysis. By default the first taxon in the matrix is assigned as outgroup. Also, notice that even if show the tree as rooted, the analyses infer trees that are unrooted. We can verify that the tree is unrooted using the `is.rooted()` function.
 
 ```{r, eval = FALSE, echo = TRUE, results = 'hidden', message = FALSE}
@@ -241,7 +253,7 @@ plot(treeRatchet_r, type="phylogram", no.margin = TRUE)
 add.scale.bar()
 ```
 
-While in most cases pratchet will be enough to use, phangorn exports some function which might be useful.`random.addition` computes random addition and can be used to generate starting trees. The function `optim.parsimony` performs tree rearrangements to find trees with a lower parsimony score. The tree rearrangements implemented are nearest-neighbor interchanges (NNI) and subtree pruning and regrafting (SPR). The latter so far only works with the fitch algorithm.
+While in most cases pratchet will be enough to use, `phangorn` exports some function which might be useful.`random.addition` computes random addition and can be used to generate starting trees. The function `optim.parsimony` performs tree rearrangements to find trees with a lower parsimony score. The tree rearrangements implemented are nearest-neighbor interchanges (NNI) and subtree pruning and regrafting (SPR). The latter so far only works with the fitch algorithm.
 
 ```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE}
 # heuristic search using random addiiton of taxa
