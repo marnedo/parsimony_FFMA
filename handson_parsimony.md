@@ -7,13 +7,12 @@ output:
     keep_md: true
 ---
 
-```{r setup, include=FALSE}
-source("setup.R")
-```
 
 
 
-```{r, eval = FALSE, echo = TRUE, results = "hide", message = FALSE, warning = FALSE}
+
+
+``` r
 # clear the R environment
 rm(list = ls())
 
