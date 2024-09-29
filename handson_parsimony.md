@@ -225,12 +225,12 @@ The current implementation is
 
 
 ``` r
-# perform model selection
-treeRatchet  <- pratchet(parachtes, trace = 0, minit=100)
+# search for the most parsimonious (MP) tree
+treeRatchet  <- pratchet(parachtes, trace = 0, minit=100, all = TRUE)
 parsimony(treeRatchet, parachtes)
 #> [1] 7893
 ```
-Now that we have inferrred the MP tree, we should plot it to have a look. 
+Now that we have inferred the MP tree, we should plot it to have a look. 
 
 
 ``` r
@@ -255,7 +255,7 @@ We will set the root of our tree  using the `root` function and we'll then plot 
 
 ``` r
 # plot treeRatchet rooted
-treeRatchet_r <- root(treeRatchet, "Segestria_sp_k200")
+treeRatchet_r <- root(treeRatchet, "Segestria_sp_k200", resolve.root = TRUE, edgelabel = TRUE)
 plot(treeRatchet_r, no.margin = TRUE)
 ```
 
@@ -265,7 +265,7 @@ Notice that the tree remains the same, you can move the root to any other node, 
 
 
 ``` r
-# perform model selection
+# reporting tree length (steps)
 parsimony(treeRatchet_r, parachtes)
 #> [1] 7893
 ```
@@ -304,4 +304,61 @@ treeSPR  <- optim.parsimony(treeRA, parachtes)
 parsimony(c(treeRA, treeSPR), parachtes)
 #> [1] 7894 7893
 ```
+## Consensus tree
 
+To look at the consensus tree from treeRA and treeSPR, we can use the `consensus` function from _ape_.
+
+
+``` r
+#combines both trees into a single object
+obj<-c(treeRA, treeSPR)
+# unrooted pratchet tree
+obj_cons <- root(consensus(obj), outgroup = "Segestria_sp_k200",resolve.root = TRUE, edgelabel =TRUE)
+plot(obj_cons, main="Rooted pratchet consensus tree",no.margin = TRUE)
+```
+
+![](handson_parsimony_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+
+We can  see that the source of conflict lays within the Parachtes genus
+
+# Session info
+
+
+```
+#> R version 4.4.1 (2024-06-14)
+#> Platform: aarch64-apple-darwin20
+#> Running under: macOS Sonoma 14.6.1
+#> 
+#> Matrix products: default
+#> BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+#> LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+#> 
+#> locale:
+#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#> 
+#> time zone: Europe/Madrid
+#> tzcode source: internal
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#>  [1] phangorn_2.12.1 ape_5.8         lubridate_1.9.3 forcats_1.0.0  
+#>  [5] stringr_1.5.1   dplyr_1.1.4     purrr_1.0.2     readr_2.1.5    
+#>  [9] tidyr_1.3.1     tibble_3.2.1    ggplot2_3.5.1   tidyverse_2.0.0
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] sass_0.4.9        utf8_1.2.4        generics_0.1.3    stringi_1.8.4    
+#>  [5] lattice_0.22-6    hms_1.1.3         digest_0.6.37     magrittr_2.0.3   
+#>  [9] evaluate_1.0.0    grid_4.4.1        timechange_0.3.0  fastmap_1.2.0    
+#> [13] jsonlite_1.8.9    Matrix_1.7-0      fansi_1.0.6       scales_1.3.0     
+#> [17] codetools_0.2-20  jquerylib_0.1.4   cli_3.6.3         rlang_1.1.4      
+#> [21] munsell_0.5.1     withr_3.0.1       cachem_1.1.0      yaml_2.3.10      
+#> [25] tools_4.4.1       parallel_4.4.1    tzdb_0.4.0        colorspace_2.1-1 
+#> [29] fastmatch_1.1-4   vctrs_0.6.5       R6_2.5.1          lifecycle_1.0.4  
+#> [33] pkgconfig_2.0.3   pillar_1.9.0      bslib_0.8.0       gtable_0.3.5     
+#> [37] glue_1.7.0        Rcpp_1.0.13       highr_0.11        xfun_0.47        
+#> [41] tidyselect_1.2.1  rstudioapi_0.16.0 knitr_1.48        igraph_2.0.3     
+#> [45] htmltools_0.5.8.1 nlme_3.1-164      rmarkdown_2.28    compiler_4.4.1   
+#> [49] quadprog_1.5-8
+```

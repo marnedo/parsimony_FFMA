@@ -204,11 +204,11 @@ The current implementation is
 4 Iterate 1:3 until either a given number of iteration is reached (minit) or no improvements have been recorded for a number of iterations (k).
 
 ```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE}
-# perform model selection
-treeRatchet  <- pratchet(parachtes, trace = 0, minit=100)
+# search for the most parsimonious (MP) tree
+treeRatchet  <- pratchet(parachtes, trace = 0, minit=100, all = TRUE)
 parsimony(treeRatchet, parachtes)
 ```
-Now that we have inferrred the MP tree, we should plot it to have a look. 
+Now that we have inferred the MP tree, we should plot it to have a look. 
 
 ```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE, fig.show='hold'}
 # plot MP tree
@@ -228,14 +228,14 @@ We will set the root of our tree  using the `root` function and we'll then plot 
 
 ```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE}
 # plot treeRatchet rooted
-treeRatchet_r <- root(treeRatchet, "Segestria_sp_k200")
+treeRatchet_r <- root(treeRatchet, "Segestria_sp_k200", resolve.root = TRUE, edgelabel = TRUE)
 plot(treeRatchet_r, no.margin = TRUE)
 ```
 
 Notice that the tree remains the same, you can move the root to any other node, and teh tree is fully equivalent. You can check that by asking again about the length of the tree with the new root.
 
 ```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE}
-# perform model selection
+# reporting tree length (steps)
 parsimony(treeRatchet_r, parachtes)
 ```
 Also, observe that this is tree  only inform about the topology. If we wanted to also include the number of substitution in each branch (i.e. branch length), we have to do the following:
@@ -265,4 +265,22 @@ treeSPR  <- optim.parsimony(treeRA, parachtes)
 # heuristic search using random addiiton of taxa
 parsimony(c(treeRA, treeSPR), parachtes)
 ```
+## Consensus tree
 
+To look at the consensus tree from treeRA and treeSPR, we can use the `consensus` function from _ape_.
+
+```{r, eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE}
+#combines both trees into a single object
+obj<-c(treeRA, treeSPR)
+# unrooted pratchet tree
+obj_cons <- root(consensus(obj), outgroup = "Segestria_sp_k200",resolve.root = TRUE, edgelabel =TRUE)
+plot(obj_cons, main="Rooted pratchet consensus tree",no.margin = TRUE)
+```
+
+We can  see that the source of conflict lays within the Parachtes genus
+
+# Session info
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
