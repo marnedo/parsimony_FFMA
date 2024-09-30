@@ -203,32 +203,32 @@ plot(neoaves, no.margin = TRUE)
 The functions provided by `ape` make it quite easy to handle phylogenies in R, feel free to experiment further to find out what you can do!
 
 
-### Inferring trees with R using parsimony
+## Inferring trees with R using parsimony
 
 So far, we have only looked at examples of trees that are already constructed in some way. However, if you are working with your own data, this is not the case - you need to actually make the tree yourself. Luckily, `phangorn` is ideally suited for this. We will use some data, bundled with the package, for the next steps. In this example, we will investigate the phylogenetic relationships of Parachtes—a genus belonging to the spider family Dysderidae by using a concatenated matrix of 6 mtDNA genes, namely cox1, nad1, 16S and 12S and 3 nuclear genes, 18S, 28S and Hisotne3, obtained from Genbank. The following code loads the data:
 
-                        
-::: {.yellow}
 
 ``` r
 # get parachtes data
 parachtes <- read.phyDat("ParALL153.fas", format = "fasta")
 ```
-:::
+
 
 The function most users want to use to infer phylogenies with MP (maximum parsimony) is `pratchet`, an implementation of the parsimony ratchet (Nixon 1999). This allows to escape local optima and find better trees than only performing NNI / SPR rearrangements.
 
 The current implementation is
 
-1 Create a bootstrap data set 𝐷𝑏from the original data set.
-2 Take the current best tree and perform tree rearrangements on 𝐷𝑏and save bootstrap tree as 𝑇𝑏.
-3 Use 𝑇𝑏and perform tree rearrangements on the original data set. If this tree has a lower parsimony score than the currently best tree, replace it.
-4 Iterate 1:3 until either a given number of iteration is reached (minit) or no improvements have been recorded for a number of iterations (k).
+1. Create a bootstrap data set 𝐷𝑏from the original data set.
+2. Take the current best tree and perform tree rearrangements on 𝐷𝑏and save bootstrap tree as 𝑇𝑏.
+3. Use 𝑇𝑏and perform tree rearrangements on the original data set. If this tree has a lower parsimony score than the currently best tree, replace it.
+4. Iterate 1:3 until either a given number of iteration is reached (minit) or no improvements have been recorded for a number of iterations (k).
 
 
 ``` r
 # search for the most parsimonious (MP) tree
-treeRatchet  <- pratchet(parachtes, trace = 0, minit=100, all = TRUE)
+treeRatchet  <- pratchet(parachtes, start = NULL, method = "fitch",  minit = 100, k = 10, trace = 1, all = TRUE, rearrangements = "SPR", perturbation = "ratchet")
+#> Parsimony score of initial tree: 7893 
+#> Iteration: 10. Best parsimony score so far: 7893Iteration: 20. Best parsimony score so far: 7893Iteration: 30. Best parsimony score so far: 7893Iteration: 40. Best parsimony score so far: 7893Iteration: 50. Best parsimony score so far: 7893Iteration: 60. Best parsimony score so far: 7893Iteration: 70. Best parsimony score so far: 7893Iteration: 80. Best parsimony score so far: 7893Iteration: 90. Best parsimony score so far: 7893Iteration: 100. Best parsimony score so far: 7893
 parsimony(treeRatchet, parachtes)
 #> [1] 7893
 ```
@@ -241,6 +241,8 @@ plot(treeRatchet,no.margin = TRUE)
 ```
 
 ![](handson_parsimony_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+### Tree rooting
 
 Notice that so far we have not define which species is the outgroup for the analysis. By default the first taxon in the matrix is assigned as outgroup. Also, notice that even if show the tree as rooted, the analyses infer trees that are unrooted. We can verify that the tree is unrooted using the `is.rooted()` function.
 
@@ -271,6 +273,9 @@ Notice that the tree remains the same, you can move the root to any other node, 
 parsimony(treeRatchet_r, parachtes)
 #> [1] 7893
 ```
+
+### Branch lengths
+
 Also, observe that this is tree  only inform about the topology. If we wanted to also include the number of substitution in each branch (i.e. branch length), we have to do the following:
 
 
@@ -290,6 +295,17 @@ add.scale.bar()
 
 ![](handson_parsimony_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
+### Exporting a tree
+
+Now that we have our tree properly rooted and with branch lengths, we can easily write it to a file in `Newick` format:
+
+``` r
+# rooted tree with branch lengths
+write.tree(treeRatchet_r, "parachtes.tre")
+```
+
+### Consensus tree
+
 While in most cases pratchet will be enough to use, `phangorn` exports some function which might be useful.`random.addition` computes random addition and can be used to generate starting trees. The function `optim.parsimony` performs tree rearrangements to find trees with a lower parsimony score. The tree rearrangements implemented are nearest-neighbor interchanges (NNI) and subtree pruning and regrafting (SPR). The latter so far only works with the fitch algorithm.
 
 
@@ -306,7 +322,6 @@ treeSPR  <- optim.parsimony(treeRA, parachtes)
 parsimony(c(treeRA, treeSPR), parachtes)
 #> [1] 7894 7893
 ```
-## Consensus tree
 
 To look at the consensus tree from treeRA and treeSPR, we can use the `consensus` function from _ape_.
 
@@ -323,7 +338,21 @@ plot(obj_cons, main="Rooted pratchet consensus tree",no.margin = TRUE)
 
 We can  see that the source of conflict lays within the Parachtes genus
 
-# Session info
+So far we have conducted all parsimony analyses assuming gap are missing data, which is the default option. However, we may want to investigate if our inferemces would change if gaps were scored as an additional character state. We can do this by using the follwoing commands:
+
+
+``` r
+#indicate gaps defined as "-" are a new state and that "n" and "?" should be considered missing data
+parachtes_5<-gap_as_state(parachtes, gap = "-", ambiguous = c("n","?"))
+```
+
+## Exercise
+
+Now, as an exercise, find the most parsimonious tree considering gaps as 5th state, root the tree properly, and report the tree, indicating the number of steps (length). USe the task opotion in CV to submit your answer
+
+
+
+### Session info
 
 
 ```
