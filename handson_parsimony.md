@@ -5,7 +5,8 @@ date: "2025-09-28"
 output:
   html_document:
     keep_md: true
-  pdf_document: default
+  latex_engine: xelatex
+  pdf_document: 
 ---
 
 
@@ -51,6 +52,8 @@ library(tidyverse)
 ```
 
 With these packages installed, we are ready to begin!
+
+# ---SESSION 1---
 
 ## Phylogenetics in R
 
@@ -349,8 +352,11 @@ plot(obj_cons, main="Rooted pratchet consensus tree",no.margin = TRUE)
 
 ![](handson_parsimony_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
-We can  see that the source of conflict lays within the Dysdera genus
+We can  see that the source of conflict lays within the *Dysdera* genus
 
+\newpage
+
+# ---SESSION 2---
 
 ## Gaps
 

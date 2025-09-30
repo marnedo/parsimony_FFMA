@@ -5,7 +5,8 @@ date: "2025-09-28"
 output:
   html_document:
     keep_md: true
-  pdf_document: default
+  latex_engine: xelatex
+  pdf_document: 
 ---
 
 ```{r html-doc, echo = FALSE}
@@ -60,6 +61,8 @@ library(tidyverse)
 ```
 
 With these packages installed, we are ready to begin!
+
+# ---SESSION 1---
 
 ## Phylogenetics in R
 
@@ -306,8 +309,11 @@ obj_cons <- root(consensus(obj), outgroup = "Segestria_sp_k200",resolve.root = T
 plot(obj_cons, main="Rooted pratchet consensus tree",no.margin = TRUE)
 ```
 
-We can  see that the source of conflict lays within the Dysdera genus
+We can  see that the source of conflict lays within the *Dysdera* genus
 
+\newpage
+
+# ---SESSION 2---
 
 ## Gaps
 
