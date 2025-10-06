@@ -14,7 +14,6 @@ output:
 
 ```{r setup, include=FALSE}
 source("setup.R")
-library(tidyverse)
 ```
 
 ```{r, eval = TRUE, echo = FALSE, message=FALSE, warning = FALSE}
@@ -503,6 +502,23 @@ ild_test_dnabin <- function(aln_bin, parts, nperm = 99, seed = 1,
   out
 }
 
+# Pretty print
+print.ILDdnabin <- function(x, ...) {
+  cat("ILD (DNAbin) permutation test\n")
+  cat(sprintf("  Observed: TL_sep - TL_comb = %.3f\n", x$stat_obs))
+  cat(sprintf("  Permutations: %d\n", x$nperm))
+  cat(sprintf("  p-value (right-tailed): %.4f\n", x$p_value))
+  invisible(x)
+}
+
+# Quick plot for the null distribution
+plot.ILDdnabin <- function(x, ...) {
+  hist(x$null, breaks = "FD", main = "ILD null distribution",
+       xlab = "TL_sep_perm - TL_comb", col = "grey80", border = "white")
+  abline(v = x$stat_obs, col = "red", lwd = 2)
+  mtext(sprintf("Observed = %.3f; p = %.4f", x$stat_obs, x$p_value), col = "red", line = 0.5)
+}
+
 ```
 
 1. We will read the alignment into a `DNAbin` object because `phyDat` format condenses the columns by patterns, which makes it difficult to assign original partitions
@@ -514,7 +530,7 @@ aln_bin <- read.dna("ParALL153.fas", format = "fasta")
 2. If we already inferred the most parsimonious tree for the overall alignment, we can just use the information.
 
 ```{r}
-mp_tree_comb <- parsimony(treeRatchet,parachtes)
+mp_tree_comb <- parsimony(parachtes_tre,parachtes)
 ```
 
 or, alternatively we could recalculate the tree length for the combined data matrix via pratchet()

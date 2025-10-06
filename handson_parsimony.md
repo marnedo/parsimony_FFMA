@@ -215,7 +215,9 @@ The functions provided by `ape` make it quite easy to handle phylogenies in R, f
 
 # Inferring trees with R using parsimony
 
-So far, we have only looked at examples of trees that are already constructed in some way. However, if you are working with your own data, this is not the case - you need to actually make the tree yourself. Luckily, `phangorn` is ideally suited for this. We will use some data, bundled with the package, for the next steps. In this example, we will investigate the phylogenetic relationships of *Parachtes* a genus belonging to the spider family Dysderidae by using a concatenated matrix of 6 mtDNA genes, namely cox1, nad1, 16S and 12S and 3 nuclear genes, 18S, 28S and Histone3, obtained from Genbank. The following code loads the data:
+So far, we have only looked at examples of trees that are already constructed in some way. However, if you are working with your own data, this is not the case - you need to actually make the tree yourself. Luckily, `phangorn` is ideally suited for this. We will use some data, bundled with the package, for the next steps. In this example, we will investigate the phylogenetic relationships of *Parachtes* a genus belonging to the spider family Dysderidae by using a concatenated matrix of 6 mtDNA genes, namely cox1, nad1, 16S and 12S and 3 nuclear genes, 18S, 28S and Histone3, obtained from Genbank. 
+
+The following code loads the data as phyDat object:
 
 
 ``` r
@@ -225,11 +227,14 @@ parachtes <- read.phyDat("ParALL153.fas", format = "fasta")
 
 ## Tree search
 There are three different search strategies:
-1. Exhaustive search (sometimes also referred as implicit enumeration, e.g. in TNT): It does guarantee the shortest tree, but there is usually a taxa limit, depending on the program used (~15). In the case of `phagorn` the usage would be `bab(data, tree = NULL, trace = 0, ...)'
-2. Heuristic search: does not guarantee finding the shortest tree. It usually consists on two rounds, first you build a tree (you can use different strategies, e.g. random addition of taxa, Wagner tree,..), followed by branch swapping, which algorithms that exchnge bracnhes of the starting tree looking for shorter trees (from lighter to thorougher rearrangements: NNi, SPR, TBR). In `phangorn`, you can use `random.addition` to compute a starting trees. The function `optim.parsimony` performs tree rearrangements to find trees with a lower parsimony score. The tree rearrangements implemented are nearest-neighbor interchanges (NNI) and subtree pruning and regrafting (SPR). The latter so far only works with the fitch algorithm. We iterate this procedures many timoes (e.g.>100) 
-3. New search strategies: these are optimised algorithm for heuristic searchers of large data matrices (e.g. >100 taxa). There are several strategies here. In this practical, we will implement parsimony ratchet. The function is `pratchet`, an implementation of the parsimony ratchet (Nixon 1999). This allows to escape local optima and find better trees than only performing NNI / SPR rearrangements.
 
-The current implementation is
+1. **Exhaustive search** (sometimes also referred as implicit enumeration, e.g. in TNT): It does guarantee the shortest tree, but there is usually a taxa limit, depending on the program used (~15). In the case of `phagorn` the usage would be `bab(data, tree = NULL, trace = 0, ...)`
+
+2.**Heuristic search**: does not guarantee finding the shortest tree. It usually consists of two rounds: (1) you build a tree (using different strategies, e.g., random addition of taxa, Wagner tree, etc.), (2) you conduct *branch swapping*, an algorithm that exchange branches of the initial tree to look for shorter trees. There are different branch swapping strategies, ranging from lighter to more thorough rearrangements: `NNi`,` SPR`, `TBR`. In `phangorn`, you can use `random.addition` to compute a starting tree. The function `optim.parsimony` performs tree rearrangements to find trees with a lower parsimony score. The tree rearrangements implemented are nearest-neighbor interchanges (`NNI`) and subtree pruning and regrafting (`SPR`). The latter so far only works with the Fitch algorithm. We iterate these procedures many times (e.g., more than 100).
+
+3. **New search strategies**: these are optimised algorithm for heuristic searchers of large data matrices (e.g. >100 taxa). There are several strategies  In this practical, we will implement *parsimony ratchet*. The function is `pratchet`, an implementation of the parsimony ratchet (Nixon 1999). This allows to escape local optima and find better trees than only performing NNI / SPR rearrangements.
+
+The current implementation is:
 
 1. Create a bootstrap data set 𝐷𝑏from the original data set.
 2. Take the current best tree and perform tree rearrangements on 𝐷𝑏and save bootstrap tree as 𝑇𝑏.
@@ -237,15 +242,7 @@ The current implementation is
 4. Iterate 1:3 until either a given number of iteration is reached (minit) or no improvements have been recorded for a number of iterations (k).
 
 
-``` r
-# search for the most parsimonious (MP) tree
-treeRatchet  <- pratchet(parachtes, start = NULL, method = "fitch",  minit = 100, k = 10, trace = 1, all = TRUE, rearrangements = "SPR", perturbation = "ratchet")
-#> Parsimony score of initial tree: 7893 
-#> Iteration: 10. Best parsimony score so far: 7893Iteration: 20. Best parsimony score so far: 7893Iteration: 30. Best parsimony score so far: 7893Iteration: 40. Best parsimony score so far: 7893Iteration: 50. Best parsimony score so far: 7893Iteration: 60. Best parsimony score so far: 7893Iteration: 70. Best parsimony score so far: 7893Iteration: 80. Best parsimony score so far: 7893Iteration: 90. Best parsimony score so far: 7893Iteration: 100. Best parsimony score so far: 7893
-#to report the number of steps
-parsimony(treeRatchet, parachtes)
-#> [1] 7893
-```
+
 Now that we have inferred the MP tree, we should plot it to have a look. 
 
 
@@ -254,7 +251,7 @@ Now that we have inferred the MP tree, we should plot it to have a look.
 plot(treeRatchet,no.margin = TRUE)
 ```
 
-![](handson_parsimony_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](handson_parsimony_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 ### Tree rooting
 
@@ -266,7 +263,7 @@ Notice that so far we have not define which species is the outgroup for the anal
 is.rooted(treeRatchet)
 ```
 
-We can also set a root on our tree, if we know what we should set the outgroup to. In our case, we can set our outgroup to Segestria_sp_k200.
+We can also set a root on our tree, if we know what we should set the outgroup to. In our case, we can set our outgroup to **Segestria_sp_k200**.
 
 We will set the root of our tree  using the `root` function and we'll then plot it to see how it looks.
 
@@ -277,7 +274,7 @@ treeRatchet_r <- root(treeRatchet, "Segestria_sp_k200", resolve.root = TRUE, edg
 plot(treeRatchet_r, no.margin = TRUE)
 ```
 
-![](handson_parsimony_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+![](handson_parsimony_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 Notice that the tree remains the same, you can move the root to any other node, and the tree is fully equivalent. You can check that by asking again about the length of the tree with the new root.
 
@@ -298,7 +295,7 @@ Also, observe that this is tree  only inform about the topology. If we wanted to
 treeRatchet_r<-acctran(treeRatchet_r, parachtes)
 ```
 
-This funciton assaigns edge weights. We now plot the tree with the corresponding branch length information:
+This function assigns edge weights. We now plot the tree with the corresponding branch length information:
 
 
 ``` r
@@ -307,7 +304,7 @@ plot(treeRatchet_r, type="phylogram", no.margin = TRUE)
 add.scale.bar()
 ```
 
-![](handson_parsimony_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+![](handson_parsimony_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
 
 ### Exporting a tree
 
@@ -320,15 +317,9 @@ write.tree(treeRatchet_r, "parachtes.tre")
 
 ### Consensus tree
 
-Let's generate a new tree use random addition of taaxa, and a second one optimizing the first one with SPR swapper:
+Sometimes we find more than one equally parsimonious tree. In those cases, we usually calculate the strict consensus tree, which helps visualize the conflict among the best trees. In our case, we found one single shortest tree, but we can pretend to have a second one by generating a new tree using random addition of taxa, which is generally suboptimal, and a second one optimizing the first with an SPR swapper.
 
 
-``` r
-# heuristic search using random addiiton of taxa
-treeRA <- random.addition(parachtes)
-treeSPR  <- optim.parsimony(treeRA, parachtes)
-#> Final p-score 7893 after  1 nni operations
-```
 
 Let's compare the legth of the two former trees
 
@@ -339,7 +330,7 @@ parsimony(c(treeRA, treeSPR), parachtes)
 #> [1] 7894 7893
 ```
 
-To find out what are the topological differences of the two trees, we can look at the consensus from treeRA and treeSPR, using the command `consensus` function from `ape`.
+To find out what are the topological differences of the two trees, we can look at the strict consensus from treeRA and treeSPR, using the command `consensus` function from `ape`.
 
 
 ``` r
@@ -350,7 +341,7 @@ obj_cons <- root(consensus(obj), outgroup = "Segestria_sp_k200",resolve.root = T
 plot(obj_cons, main="Rooted pratchet consensus tree",no.margin = TRUE)
 ```
 
-![](handson_parsimony_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+![](handson_parsimony_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
 
 We can  see that the source of conflict lays within the *Dysdera* genus
 
@@ -368,7 +359,7 @@ So far we have conducted all parsimony analyses assuming gap are missing data, w
 parachtes_5<-gap_as_state(parachtes, gap = "-", ambiguous = c("n","?"))
 ```
 
-Similarly, we can decide to score gaps as an alternative absence/presence character, following the simple coding method proposed by Simmons & Ochoterena. 2000. We will. use the `ìps`package command `code.simple.gaps`. Note that the gapped positions are excluded from the matrix.
+Similarly, we can decide to score gaps as an alternative absence/presence character, following the simple coding method proposed by Simmons & Ochoterena. 2000. We will. use the `ìps`package command `code.simple.gaps`. Note that the gapped positions are excluded from the matrix, and therefore the new matrix would have a different number of characters
 
 
 ``` r
@@ -477,49 +468,17 @@ parachtes_DNAbin_ap<-code.simple.gaps(parachtes_DNAbin)
 #Finally, we will transform the new matrix with the recoded gaps back into a phyDat object
 parachtes_ap<-as.phyDat(parachtes_DNAbin_ap)
 ```
-
+THe new coding has generated 33 additional characters, and has removed 42 positions of the original 4398
 
 ## Node support
 
-Inference methods like Parsimony and Maximum Likelihood produce one or more best trees that meet certain optimality criteria, such as being the shortest tree or best explaining the data given a specific evolutionary model. However, we may need to assess the impact of character undersampling (random error) on our results. Specifically, we want to determine the support for the nodes recovered in the preferred tree(s). One way to do this is by using resampling techniques. These techniques involve generating pseudoreplicates (ideally >100) of our original matrix either by resampling characters with repetition (bootstrap) or by randomly removing a proportion of the original matrix (Jaccknife). For each matrix, we find the best tree(s). Finally, we determine the node support by estimating the proportion of time that each node is recovered in the resampled trees. We will estimate node support using resampling with the package `TreeSearch`.
+Inference methods like Parsimony and Maximum Likelihood produce one or more best trees that meet certain optimality criteria, such as being the shortest tree or best explaining the data given a specific evolutionary model. However, we may need to assess the impact of character undersampling (random error) on our results. Specifically, we want to determine the support for the nodes recovered in the preferred tree(s). One way to do this is by using **resampling techniques**. 
+
+These techniques involve generating pseudoreplicates (ideally >100) of our original matrix either by resampling characters with repetition (*bootstrap*) or by randomly removing a proportion of the original matrix (*Jaccknife*). For each matrix, we find the best tree(s). Finally, we determine the node support by estimating the proportion of time that each node is recovered in the resampled trees. We will estimate node support using resampling with the package `TreeSearch`.
 
 The package includes a more intensive version of the parsimony ratchet strategy for estimating the most parsimonious tree. we will first implement this strategy using the follwoing commands:
 
 
-``` r
-# An heuristic search using parsimony ratchet (Nixon, 1999)
-parachtes_tre <- MaximizeParsimony(parachtes, ratchIter = 100, startIter = 2,
-                           tbrIter = 2, maxHits = 4, maxTime = 1/100, verbosity = 4)
-parachtes_tre_r <- root(parachtes_tre, "Segestria_sp_k200", resolve.root = TRUE, edgelabel = TRUE)
-firstHit <- attr(parachtes_tre, "firstHit")
-firstHit
-#>     seed    start   ratch1   ratch2   ratch3   ratch4   ratch5   ratch6 
-#>        0        2        0        0        0        0        0        0 
-#>   ratch7   ratch8   ratch9  ratch10  ratch11  ratch12  ratch13  ratch14 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch15  ratch16  ratch17  ratch18  ratch19  ratch20  ratch21  ratch22 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch23  ratch24  ratch25  ratch26  ratch27  ratch28  ratch29  ratch30 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch31  ratch32  ratch33  ratch34  ratch35  ratch36  ratch37  ratch38 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch39  ratch40  ratch41  ratch42  ratch43  ratch44  ratch45  ratch46 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch47  ratch48  ratch49  ratch50  ratch51  ratch52  ratch53  ratch54 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch55  ratch56  ratch57  ratch58  ratch59  ratch60  ratch61  ratch62 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch63  ratch64  ratch65  ratch66  ratch67  ratch68  ratch69  ratch70 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch71  ratch72  ratch73  ratch74  ratch75  ratch76  ratch77  ratch78 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch79  ratch80  ratch81  ratch82  ratch83  ratch84  ratch85  ratch86 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch87  ratch88  ratch89  ratch90  ratch91  ratch92  ratch93  ratch94 
-#>        0        0        0        0        0        0        0        0 
-#>  ratch95  ratch96  ratch97  ratch98  ratch99 ratch100    final 
-#>        0        0        0        0        0        0        0
-```
 
 ### Node support based on Jaccknife resampling
 
@@ -566,7 +525,7 @@ plot(parachtes_tre_r[[1]], no.margin = TRUE)
 JackLabels(parachtes_tre_r[[1]], jackTrees_consensus_r,add=TRUE)
 ```
 
-![](handson_parsimony_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+![](handson_parsimony_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
 
 ```
 #>  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55 
@@ -576,9 +535,175 @@ JackLabels(parachtes_tre_r[[1]], jackTrees_consensus_r,add=TRUE)
 ```
 
 
+## Test congruence among data partitions via ILD test
+
+There is currently no R function to perform the ILD test in any R package. We will create a function (ild_test_dnabin) using the following R script:
+
+
+``` r
+
+# Main ILD (Farris PHT) style test:
+# - aln_bin: DNAbin alignment (rows = taxa, cols = sites; same taxa order across all sites)
+# - parts: named list of integer vectors of site indices (original column positions)
+# - nperm: number of permutations (e.g., 99, 199, 999)
+# - pratchet_iter: iterations for MP search (balance speed/quality)
+# Returns observed stat, null distribution, and p-value.
+  
+ild_test_dnabin <- function(aln_bin, parts, nperm = 99, seed = 1,
+                            pratchet_iter = 50, tree_comb = NULL, quiet = FALSE) {
+  set.seed(seed)
+
+# ----- checks -----
+  if (!inherits(aln_bin, "DNAbin"))
+    stop("aln_bin must be DNAbin (use ape::read.dna).")
+
+  L <- ncol(aln_bin)
+  if (is.null(L) || L < 2) stop("Alignment must have >= 2 sites.")
+  if (!is.list(parts) || length(parts) < 2)
+    stop("Provide >= 2 partitions in 'parts'.")
+
+  sizes <- vapply(parts, length, 1L)
+  if (sum(sizes) != L) {
+    stop(sprintf("Sum of partition sizes (%d) != alignment length (%d).", sum(sizes), L))
+  }
+
+# Bounds check
+  max_idx <- max(unlist(parts))
+  min_idx <- min(unlist(parts))
+  if (min_idx < 1 || max_idx > L) {
+    stop(sprintf("Partition indices out of bounds: allowed 1..%d, got [%d..%d].", L, min_idx, max_idx))
+  }
+
+  # Helper for MP length
+  mp_tree_length <- function(aln_bin, pratchet_iter = 50, fixed_tree = NULL) {
+    dat <- as.phyDat(aln_bin)
+    if (is.null(fixed_tree)) {
+      tr <- pratchet(dat, maxit = pratchet_iter)
+    } else {
+      tr <- fixed_tree
+    }
+    parsimony(tr, dat)
+  }
+
+# ----- observed statistic -----
+# Combined tree length: use precomputed if given
+  if (!is.null(tree_comb)) {
+    if (!inherits(tree_comb, "phylo"))
+      stop("tree_comb must be a 'phylo' object.")
+    TL_comb <- mp_tree_length(aln_bin, fixed_tree = tree_comb)
+  } else {
+    TL_comb <- mp_tree_length(aln_bin, pratchet_iter)
+  }
+
+  # Sum of MP lengths from separate partitions (each optimized separately)
+  TL_sep <- sum(sapply(parts, function(p)
+    mp_tree_length(aln_bin[, p, drop = FALSE], pratchet_iter)))
+
+  stat_obs <- TL_sep - TL_comb
+  if (!quiet) cat(sprintf("Observed (TL_sep - TL_comb) = %.3f\n", stat_obs))
+
+# ----- permutation test -----
+  all_sites <- unlist(parts, use.names = FALSE)
+  null_vals <- numeric(nperm)
+  pb <- if (!quiet) txtProgressBar(min = 0, max = nperm, style = 3) else NULL
+
+  for (i in seq_len(nperm)) {
+    perm <- sample(all_sites, length(all_sites), replace = FALSE)
+    # repartition
+    idx_list <- vector("list", length(sizes))
+    start <- 1
+    for (k in seq_along(sizes)) {
+      idx_list[[k]] <- perm[start:(start + sizes[k] - 1)]
+      start <- start + sizes[k]
+    }
+# recompute TL_sep_perm
+    TL_sep_perm <- sum(sapply(idx_list, function(p)
+      mp_tree_length(aln_bin[, p, drop = FALSE], pratchet_iter)))
+    null_vals[i] <- TL_sep_perm - TL_comb
+    if (!quiet) setTxtProgressBar(pb, i)
+  }
+  if (!quiet) close(pb)
+
+  # Right-tailed p-value as in PAUP*: proportion of permuted >= observed
+  
+  p_val <- (sum(null_vals >= stat_obs) + 1) / (nperm + 1)
+
+  out <- list(stat_obs = stat_obs, null = null_vals, p_value = p_val,
+              TL_sep = TL_sep, TL_comb = TL_comb,
+              nperm = nperm, sizes = sizes,
+              tree_comb = tree_comb)
+  class(out) <- "ILDdnabin"
+  out
+}
+
+# Pretty print
+print.ILDdnabin <- function(x, ...) {
+  cat("ILD (DNAbin) permutation test\n")
+  cat(sprintf("  Observed: TL_sep - TL_comb = %.3f\n", x$stat_obs))
+  cat(sprintf("  Permutations: %d\n", x$nperm))
+  cat(sprintf("  p-value (right-tailed): %.4f\n", x$p_value))
+  invisible(x)
+}
+
+# Quick plot for the null distribution
+plot.ILDdnabin <- function(x, ...) {
+  hist(x$null, breaks = "FD", main = "ILD null distribution",
+       xlab = "TL_sep_perm - TL_comb", col = "grey80", border = "white")
+  abline(v = x$stat_obs, col = "red", lwd = 2)
+  mtext(sprintf("Observed = %.3f; p = %.4f", x$stat_obs, x$p_value), col = "red", line = 0.5)
+}
+
+```
+
+1. We will read the alignment into a `DNAbin` object because `phyDat` format condenses the columns by patterns, which makes it difficult to assign original partitions
+
+
+``` r
+aln_bin <- read.dna("ParALL153.fas", format = "fasta")
+```
+
+2. If we already inferred the most parsimonious tree for the overall alignment, we can just use the information.
+
+
+``` r
+mp_tree_comb <- parsimony(parachtes_tre,parachtes)
+```
+
+or, alternatively we could recalculate the tree length for the combined data matrix via pratchet()
+
+
+``` r
+#dat_full <- as.phyDat(aln_bin)
+#mp_tree_comb <- pratchet(dat_full, maxit = 100)
+```
+
+3. We will define partitions by ORIGINAL column indices (must cover all columns). In this example, we will compare the mtDNA genes (COI, 12S, 16S, which correspond to the first 2731 positions) versus the nuc genes (18S, 28S, H3)
+
+
+
+4. We can now run the ILD test. Note that we have to define the number of permutations (nperm); the more, the better—usually 1000 is the minimum. However, in this example, to avoid spending too much time, we will only run 100 permutations (99 plus the observed partition lengths).
+
+
+
+5. We can now inspect the results
+
+
+``` r
+print(res)
+#> ILD (DNAbin) permutation test
+#>   Observed: TL_sep - TL_comb = -14.000
+#>   Permutations: 99
+#>   p-value (right-tailed): 0.4200
+plot(res)
+```
+
+![](handson_parsimony_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+
+
+
 # Exercises
 
-Find the most parsimonious tree, considering gaps as absence/presence. Properly root the tree and report the tree, indicating the number of steps (length). Assess the node support using Jackknife.
+Find the most parsimonious tree, considering gaps as absence/presence. Properly root the tree and report the tree, indicating the number of steps (length). Assess the node support using Jackknife. Finally, test if the moleculars and the recoded gap partitions are congruent.
 
 In the CV, use the task option to submit your answer
 
@@ -605,10 +730,10 @@ In the CV, use the task option to submit your answer
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#>  [1] TreeSearch_1.6.0 ips_0.0.12       phangorn_2.12.1  ape_5.8-1       
-#>  [5] lubridate_1.9.4  forcats_1.0.0    stringr_1.5.1    dplyr_1.1.4     
-#>  [9] purrr_1.0.4      readr_2.1.5      tidyr_1.3.1      tibble_3.2.1    
-#> [13] ggplot2_3.5.2    tidyverse_2.0.0 
+#>  [1] lubridate_1.9.4  forcats_1.0.0    stringr_1.5.1    dplyr_1.1.4     
+#>  [5] purrr_1.0.4      readr_2.1.5      tidyr_1.3.1      tibble_3.2.1    
+#>  [9] ggplot2_3.5.2    tidyverse_2.0.0  TreeSearch_1.6.0 ips_0.0.12      
+#> [13] phangorn_2.12.1  ape_5.8-1       
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.2.1    farver_2.1.2        R.utils_2.13.0     
@@ -629,8 +754,8 @@ In the CV, use the task option to submit your answer
 #> [46] parallel_4.4.1      matrixStats_1.5.0   vctrs_0.6.5        
 #> [49] Matrix_1.7-3        TreeDist_2.9.2      jsonlite_2.0.0     
 #> [52] hms_1.1.3           bit64_4.6.0-1       listenv_0.9.1      
-#> [55] protoclust_1.6.4    jquerylib_0.1.4     parallelly_1.44.0  
-#> [58] glue_1.8.0          codetools_0.2-20    stringi_1.8.7      
+#> [55] protoclust_1.6.4    jquerylib_0.1.4     glue_1.8.0         
+#> [58] parallelly_1.44.0   codetools_0.2-20    stringi_1.8.7      
 #> [61] gtable_0.3.6        later_1.4.2         quadprog_1.5-8     
 #> [64] pillar_1.10.2       htmltools_0.5.8.1   R6_2.6.1           
 #> [67] zigg_0.0.2          Rdpack_2.6.4        evaluate_1.0.3     

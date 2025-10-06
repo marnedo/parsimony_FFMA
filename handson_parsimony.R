@@ -9,15 +9,14 @@
 #'   pdf_document: 
 #' ---
 #' 
-## ----html-doc, echo = FALSE------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----html-doc, echo = FALSE--------------------------------------------------------------------------
 
 #' 
-## ----setup, include=FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----setup, include=FALSE----------------------------------------------------------------------------
 source("setup.R")
-library(tidyverse)
 
 #' 
-## ----eval = TRUE, echo = FALSE, message=FALSE, warning = FALSE-------------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = FALSE, message=FALSE, warning = FALSE---------------------------------------
 library(ape)
 library(phangorn)
 library(ips)
@@ -41,7 +40,7 @@ library(tidyverse)
 #' First, we need to set up our R environment. We'll load `tidyverse` a package that facilitates dta manipulation and visualization. along a few more packages today to help us handle different types of data. Chief among these is `ape` which is the basis for a lot of phylogenetic analysis in R. 
 #' We will also load another phylogenetic package, `phangorn` (which has an extremely [geeky reference](https://en.wikipedia.org/wiki/Fangorn) in its name).
 #' 
-## ----eval = FALSE, echo = TRUE, results = "hide", message = FALSE, warning = FALSE-----------------------------------------------------------------------------------------------
+## ----eval = FALSE, echo = TRUE, results = "hide", message = FALSE, warning = FALSE-------------------
 # # clear the R environment
 # rm(list = ls())
 # 
@@ -66,7 +65,7 @@ library(tidyverse)
 #' 
 #' ## Phylogenetics in R
 #' 
-## ----html-doc, echo = FALSE------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----html-doc, echo = FALSE--------------------------------------------------------------------------
 
 #' 
 #' R has a number of extremely powerful packages for performing phylogenetic analysis, from plotting trees to testing comparative models of evolution. You can see [here](https://cran.r-project.org/web/views/Phylogenetics.html) for more information if you are interested in learning about what sort of things are possible. For today's session, we will learn how to handle and visualize phylogenetic trees in R. We will also construct a series of trees from a sequence alignment. First, let's familiarize ourselves with how R handles phylogenetic data.
@@ -75,7 +74,7 @@ library(tidyverse)
 #' 
 #' The backbone of most phylogenetic analysis in R comes from the functions that are part of the `ape` package. `ape` stores trees as `phylo` objects, which are easy to access and manipulate. The easiest way to understand this is to have a look at a simple phylogeny, so we'll create a random tree now.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # set seed to ensure the same tree is produced
 set.seed(32)
 # generate a tree
@@ -88,7 +87,7 @@ tree <- rtree(n = 4, tip.label = c("a", "b", "c", "d"))
 #' 
 #' Let's take a closer look at our `tree` object. It is a `phylo` object - you can demonstrate this to yourself with `class(tree)`.
 #' 
-## ----eval = TRUE, echo = TRUE, message = FALSE-----------------------------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, message = FALSE-------------------------------------------------------
 tree
 
 #' 
@@ -96,7 +95,7 @@ tree
 #' 
 #' You can actually look more deeply into the data stored within the `tree` object if you want to. Try the following code and see what is inside.
 #' 
-## ----eval = FALSE, echo = TRUE, results = 'hide', message = FALSE----------------------------------------------------------------------------------------------------------------
+## ----eval = FALSE, echo = TRUE, results = 'hide', message = FALSE------------------------------------
 # str(tree)
 # objects(tree)
 # tree$edge
@@ -105,7 +104,7 @@ tree
 #' 
 #' It is of course, much easier to understand a tree when we visualise it. Luckily this is easy in R.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 plot(tree)
 
 #' 
@@ -117,7 +116,7 @@ plot(tree)
 #' 
 #' First, let's generate another random tree, this time with 5 taxa.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # set seed to ensure the same tree is produced
 set.seed(32)
 # generate a tree
@@ -145,14 +144,14 @@ tree <- rtree(n = 5, tip.label = c("a", "b", "c", "d", "e"))
 #' 
 #' So far, we have only looked at randomly generated trees. Let's have a look at some data stored within `ape`---a phylogeny of birds at the order level.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # get bird order data
 data("bird.orders")
 
 #' 
 #' Let's plot the phylogeny to have a look at it. We will also add some annotation to make sense of the phylogeny.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # no.margin = TRUE gives prettier plots
 plot(bird.orders, no.margin = TRUE)
 segments(38, 1, 38, 5, lwd = 2)
@@ -165,7 +164,7 @@ text(39, 14.5, "Neoaves", srt = 270)
 #' 
 #' Let's focus on the Neoaves clade for now. Perhaps we want to test whether certain families within Neoaves form a monophyletic group? We can do this with the `is.monophyletic` function.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # Parrots and Passerines?
 is.monophyletic(bird.orders, c("Passeriformes", "Psittaciformes"))
 # hummingbirds and swifts?
@@ -174,7 +173,7 @@ is.monophyletic(bird.orders, c("Trochiliformes", "Apodiformes"))
 #' 
 #' If we want to look at just the Neoaves, we can subset our tree using `extract.clade()`. We need to supply a node from our tree to `extract.clade`, so let's find the correct node first. The nodes in the tree can be found by running the `nodelabels()` function after using `plot()`:
 #' 
-## --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------------
 plot(bird.orders, no.margin = TRUE)
 segments(38, 1, 38, 5, lwd = 2)
 text(39, 3, "Proaves", srt = 270)
@@ -185,7 +184,7 @@ nodelabels()
 #' 
 #' We can see that the Neoaves start at node 29, so let's extract that one.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # extract clade
 neoaves <- extract.clade(bird.orders, 29)
 # plot
@@ -198,35 +197,41 @@ plot(neoaves, no.margin = TRUE)
 #' 
 #' # Inferring trees with R using parsimony
 #' 
-#' So far, we have only looked at examples of trees that are already constructed in some way. However, if you are working with your own data, this is not the case - you need to actually make the tree yourself. Luckily, `phangorn` is ideally suited for this. We will use some data, bundled with the package, for the next steps. In this example, we will investigate the phylogenetic relationships of *Parachtes* a genus belonging to the spider family Dysderidae by using a concatenated matrix of 6 mtDNA genes, namely cox1, nad1, 16S and 12S and 3 nuclear genes, 18S, 28S and Histone3, obtained from Genbank. The following code loads the data:
+#' So far, we have only looked at examples of trees that are already constructed in some way. However, if you are working with your own data, this is not the case - you need to actually make the tree yourself. Luckily, `phangorn` is ideally suited for this. We will use some data, bundled with the package, for the next steps. In this example, we will investigate the phylogenetic relationships of *Parachtes* a genus belonging to the spider family Dysderidae by using a concatenated matrix of 6 mtDNA genes, namely cox1, nad1, 16S and 12S and 3 nuclear genes, 18S, 28S and Histone3, obtained from Genbank. 
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+#' The following code loads the data as phyDat object:
+#' 
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # get parachtes data
 parachtes <- read.phyDat("ParALL153.fas", format = "fasta")
 
 #' 
 #' ## Tree search
 #' There are three different search strategies:
-#' 1. Exhaustive search (sometimes also referred as implicit enumeration, e.g. in TNT): It does guarantee the shortest tree, but there is usually a taxa limit, depending on the program used (~15). In the case of `phagorn` the usage would be `bab(data, tree = NULL, trace = 0, ...)'
-#' 2. Heuristic search: does not guarantee finding the shortest tree. It usually consists on two rounds, first you build a tree (you can use different strategies, e.g. random addition of taxa, Wagner tree,..), followed by branch swapping, which algorithms that exchnge bracnhes of the starting tree looking for shorter trees (from lighter to thorougher rearrangements: NNi, SPR, TBR). In `phangorn`, you can use `random.addition` to compute a starting trees. The function `optim.parsimony` performs tree rearrangements to find trees with a lower parsimony score. The tree rearrangements implemented are nearest-neighbor interchanges (NNI) and subtree pruning and regrafting (SPR). The latter so far only works with the fitch algorithm. We iterate this procedures many timoes (e.g.>100) 
-#' 3. New search strategies: these are optimised algorithm for heuristic searchers of large data matrices (e.g. >100 taxa). There are several strategies here. In this practical, we will implement parsimony ratchet. The function is `pratchet`, an implementation of the parsimony ratchet (Nixon 1999). This allows to escape local optima and find better trees than only performing NNI / SPR rearrangements.
 #' 
-#' The current implementation is
+#' 1. **Exhaustive search** (sometimes also referred as implicit enumeration, e.g. in TNT): It does guarantee the shortest tree, but there is usually a taxa limit, depending on the program used (~15). In the case of `phagorn` the usage would be `bab(data, tree = NULL, trace = 0, ...)`
+#' 
+#' 2.**Heuristic search**: does not guarantee finding the shortest tree. It usually consists of two rounds: (1) you build a tree (using different strategies, e.g., random addition of taxa, Wagner tree, etc.), (2) you conduct *branch swapping*, an algorithm that exchange branches of the initial tree to look for shorter trees. There are different branch swapping strategies, ranging from lighter to more thorough rearrangements: `NNi`,` SPR`, `TBR`. In `phangorn`, you can use `random.addition` to compute a starting tree. The function `optim.parsimony` performs tree rearrangements to find trees with a lower parsimony score. The tree rearrangements implemented are nearest-neighbor interchanges (`NNI`) and subtree pruning and regrafting (`SPR`). The latter so far only works with the Fitch algorithm. We iterate these procedures many times (e.g., more than 100).
+#' 
+#' 3. **New search strategies**: these are optimised algorithm for heuristic searchers of large data matrices (e.g. >100 taxa). There are several strategies  In this practical, we will implement *parsimony ratchet*. The function is `pratchet`, an implementation of the parsimony ratchet (Nixon 1999). This allows to escape local optima and find better trees than only performing NNI / SPR rearrangements.
+#' 
+#' The current implementation is:
 #' 
 #' 1. Create a bootstrap data set 𝐷𝑏from the original data set.
 #' 2. Take the current best tree and perform tree rearrangements on 𝐷𝑏and save bootstrap tree as 𝑇𝑏.
 #' 3. Use 𝑇𝑏and perform tree rearrangements on the original data set. If this tree has a lower parsimony score than the currently best tree, replace it.
 #' 4. Iterate 1:3 until either a given number of iteration is reached (minit) or no improvements have been recorded for a number of iterations (k).
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----Parsimony ratchet, message=FALSE, include=FALSE, results='hidden'-------------------------------
 # search for the most parsimonious (MP) tree
 treeRatchet  <- pratchet(parachtes, start = NULL, method = "fitch",  minit = 100, k = 10, trace = 1, all = TRUE, rearrangements = "SPR", perturbation = "ratchet")
 #to report the number of steps
 parsimony(treeRatchet, parachtes)
 
+#' 
 #' Now that we have inferred the MP tree, we should plot it to have a look. 
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE, fig.show='hold'----------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE, fig.show='hold'------------------
 # plot MP tree
 plot(treeRatchet,no.margin = TRUE)
 
@@ -235,16 +240,16 @@ plot(treeRatchet,no.margin = TRUE)
 #' 
 #' Notice that so far we have not define which species is the outgroup for the analysis. By default the first taxon in the matrix is assigned as outgroup. Also, notice that even if show the tree as rooted, the analyses infer trees that are unrooted. We can verify that the tree is unrooted using the `is.rooted()` function.
 #' 
-## ----eval = FALSE, echo = TRUE, results = 'hidden', message = FALSE--------------------------------------------------------------------------------------------------------------
+## ----eval = FALSE, echo = TRUE, results = 'hidden', message = FALSE----------------------------------
 # # check whether the tree is rooted
 # is.rooted(treeRatchet)
 
 #' 
-#' We can also set a root on our tree, if we know what we should set the outgroup to. In our case, we can set our outgroup to Segestria_sp_k200.
+#' We can also set a root on our tree, if we know what we should set the outgroup to. In our case, we can set our outgroup to **Segestria_sp_k200**.
 #' 
 #' We will set the root of our tree  using the `root` function and we'll then plot it to see how it looks.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # plot treeRatchet rooted
 treeRatchet_r <- root(treeRatchet, "Segestria_sp_k200", resolve.root = TRUE, edgelabel = TRUE)
 plot(treeRatchet_r, no.margin = TRUE)
@@ -252,7 +257,7 @@ plot(treeRatchet_r, no.margin = TRUE)
 #' 
 #' Notice that the tree remains the same, you can move the root to any other node, and the tree is fully equivalent. You can check that by asking again about the length of the tree with the new root.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # reporting tree length (steps)
 parsimony(treeRatchet_r, parachtes)
 
@@ -261,14 +266,14 @@ parsimony(treeRatchet_r, parachtes)
 #' 
 #' Also, observe that this is tree  only inform about the topology. If we wanted to also include the number of substitution in each branch (i.e. branch length), we have to do the following:
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # perform character optimization
 treeRatchet_r<-acctran(treeRatchet_r, parachtes)
 
 #' 
-#' This funciton assaigns edge weights. We now plot the tree with the corresponding branch length information:
+#' This function assigns edge weights. We now plot the tree with the corresponding branch length information:
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # plot the rooted tree with branch lengths
 plot(treeRatchet_r, type="phylogram", no.margin = TRUE)
 add.scale.bar()
@@ -277,16 +282,16 @@ add.scale.bar()
 #' ### Exporting a tree
 #' 
 #' Now that we have our tree properly rooted and with branch lengths, we can easily write it to a file in `Newick` format:
-## ----write_tree, eval=FALSE------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----write_tree, eval=FALSE--------------------------------------------------------------------------
 # # rooted tree with branch lengths
 # write.tree(treeRatchet_r, "parachtes.tre")
 
 #' 
 #' ### Consensus tree
 #' 
-#' Let's generate a new tree use random addition of taaxa, and a second one optimizing the first one with SPR swapper:
+#' Sometimes we find more than one equally parsimonious tree. In those cases, we usually calculate the strict consensus tree, which helps visualize the conflict among the best trees. In our case, we found one single shortest tree, but we can pretend to have a second one by generating a new tree using random addition of taxa, which is generally suboptimal, and a second one optimizing the first with an SPR swapper.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----message=FALSE, include=FALSE, results='hidden'--------------------------------------------------
 # heuristic search using random addiiton of taxa
 treeRA <- random.addition(parachtes)
 treeSPR  <- optim.parsimony(treeRA, parachtes)
@@ -294,14 +299,14 @@ treeSPR  <- optim.parsimony(treeRA, parachtes)
 #' 
 #' Let's compare the legth of the two former trees
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # compare the length of the trees
 parsimony(c(treeRA, treeSPR), parachtes)
 
 #' 
-#' To find out what are the topological differences of the two trees, we can look at the consensus from treeRA and treeSPR, using the command `consensus` function from `ape`.
+#' To find out what are the topological differences of the two trees, we can look at the strict consensus from treeRA and treeSPR, using the command `consensus` function from `ape`.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 #combines both trees into a single object
 obj<-c(treeRA, treeSPR)
 # Calculate and plot the consensus tree
@@ -319,14 +324,14 @@ plot(obj_cons, main="Rooted pratchet consensus tree",no.margin = TRUE)
 #' 
 #' So far we have conducted all parsimony analyses assuming gap are missing data, which is the default option. However, we may want to investigate if our inferences would change if gaps were scored as an additional character state. We can do this by using the following commands:
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 #indicate gaps defined as "-" are a new state and that "n" and "?" should be considered missing data
 parachtes_5<-gap_as_state(parachtes, gap = "-", ambiguous = c("n","?"))
 
 #' 
-#' Similarly, we can decide to score gaps as an alternative absence/presence character, following the simple coding method proposed by Simmons & Ochoterena. 2000. We will. use the `ìps`package command `code.simple.gaps`. Note that the gapped positions are excluded from the matrix.
+#' Similarly, we can decide to score gaps as an alternative absence/presence character, following the simple coding method proposed by Simmons & Ochoterena. 2000. We will. use the `ìps`package command `code.simple.gaps`. Note that the gapped positions are excluded from the matrix, and therefore the new matrix would have a different number of characters
 #' 
-## ----echo=TRUE, message=FALSE, results='hidden'----------------------------------------------------------------------------------------------------------------------------------
+## ----echo=TRUE, message=FALSE, results='hidden'------------------------------------------------------
 #First, we will transform our parachtes matrix from a phyDat class object to a DNAbin class object
 parachtes_DNAbin<-as.DNAbin(parachtes)
 #Now we car recode the gaps as absence/presence data
@@ -334,15 +339,17 @@ parachtes_DNAbin_ap<-code.simple.gaps(parachtes_DNAbin)
 #Finally, we will transform the new matrix with the recoded gaps back into a phyDat object
 parachtes_ap<-as.phyDat(parachtes_DNAbin_ap)
 
-#' 
+#' THe new coding has generated 33 additional characters, and has removed 42 positions of the original 4398
 #' 
 #' ## Node support
 #' 
-#' Inference methods like Parsimony and Maximum Likelihood produce one or more best trees that meet certain optimality criteria, such as being the shortest tree or best explaining the data given a specific evolutionary model. However, we may need to assess the impact of character undersampling (random error) on our results. Specifically, we want to determine the support for the nodes recovered in the preferred tree(s). One way to do this is by using resampling techniques. These techniques involve generating pseudoreplicates (ideally >100) of our original matrix either by resampling characters with repetition (bootstrap) or by randomly removing a proportion of the original matrix (Jaccknife). For each matrix, we find the best tree(s). Finally, we determine the node support by estimating the proportion of time that each node is recovered in the resampled trees. We will estimate node support using resampling with the package `TreeSearch`.
+#' Inference methods like Parsimony and Maximum Likelihood produce one or more best trees that meet certain optimality criteria, such as being the shortest tree or best explaining the data given a specific evolutionary model. However, we may need to assess the impact of character undersampling (random error) on our results. Specifically, we want to determine the support for the nodes recovered in the preferred tree(s). One way to do this is by using **resampling techniques**. 
+#' 
+#' These techniques involve generating pseudoreplicates (ideally >100) of our original matrix either by resampling characters with repetition (*bootstrap*) or by randomly removing a proportion of the original matrix (*Jaccknife*). For each matrix, we find the best tree(s). Finally, we determine the node support by estimating the proportion of time that each node is recovered in the resampled trees. We will estimate node support using resampling with the package `TreeSearch`.
 #' 
 #' The package includes a more intensive version of the parsimony ratchet strategy for estimating the most parsimonious tree. we will first implement this strategy using the follwoing commands:
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----More intense ratchet, message=FALSE, include=FALSE, results='hidden'----------------------------
 # An heuristic search using parsimony ratchet (Nixon, 1999)
 parachtes_tre <- MaximizeParsimony(parachtes, ratchIter = 100, startIter = 2,
                            tbrIter = 2, maxHits = 4, maxTime = 1/100, verbosity = 4)
@@ -355,7 +362,7 @@ firstHit
 #' 
 #' We will now estimate the node support using Jackknife. This is similar to Bootstrap, the most widely resampling method  for finding node support. It just differs by the type of resampling implemented, removal instead of resampling with repetition. If you want to use bootstrap instead, just replace `method = "jack"` by `method = "bootstrap"`.
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 # Jackknife resampling, we will build 10 resampled matrices (pseudoreplicates) only due to time constraints. Ideally >100.
 nReplicates <- 10
 jackTrees <- replicate(nReplicates,
@@ -379,7 +386,7 @@ jackTrees <- replicate(nReplicates,
 #' 
 #' `JackLabels(ape::consensus(trees), lapply(jackTrees, `[[`, 1))`
 #' 
-## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE---------------------------------------------------------------------------------------------------------------
+## ----eval = TRUE, echo = TRUE, results = 'hidden', message = FALSE-----------------------------------
 #Take the strict consensus of all trees for each replicate
 jackTrees_consensus<-lapply(jackTrees, consensus)
 
@@ -395,15 +402,179 @@ JackLabels(parachtes_tre_r[[1]], jackTrees_consensus_r,add=TRUE)
 
 #' 
 #' 
+#' ## Test congruence among data partitions via ILD test
+#' 
+#' There is currently no R function to perform the ILD test in any R package. We will create a function (ild_test_dnabin) using the following R script:
+#' 
+## ----ILD_function_combined tree once-----------------------------------------------------------------
+
+# Main ILD (Farris PHT) style test:
+# - aln_bin: DNAbin alignment (rows = taxa, cols = sites; same taxa order across all sites)
+# - parts: named list of integer vectors of site indices (original column positions)
+# - nperm: number of permutations (e.g., 99, 199, 999)
+# - pratchet_iter: iterations for MP search (balance speed/quality)
+# Returns observed stat, null distribution, and p-value.
+  
+ild_test_dnabin <- function(aln_bin, parts, nperm = 99, seed = 1,
+                            pratchet_iter = 50, tree_comb = NULL, quiet = FALSE) {
+  set.seed(seed)
+
+# ----- checks -----
+  if (!inherits(aln_bin, "DNAbin"))
+    stop("aln_bin must be DNAbin (use ape::read.dna).")
+
+  L <- ncol(aln_bin)
+  if (is.null(L) || L < 2) stop("Alignment must have >= 2 sites.")
+  if (!is.list(parts) || length(parts) < 2)
+    stop("Provide >= 2 partitions in 'parts'.")
+
+  sizes <- vapply(parts, length, 1L)
+  if (sum(sizes) != L) {
+    stop(sprintf("Sum of partition sizes (%d) != alignment length (%d).", sum(sizes), L))
+  }
+
+# Bounds check
+  max_idx <- max(unlist(parts))
+  min_idx <- min(unlist(parts))
+  if (min_idx < 1 || max_idx > L) {
+    stop(sprintf("Partition indices out of bounds: allowed 1..%d, got [%d..%d].", L, min_idx, max_idx))
+  }
+
+  # Helper for MP length
+  mp_tree_length <- function(aln_bin, pratchet_iter = 50, fixed_tree = NULL) {
+    dat <- as.phyDat(aln_bin)
+    if (is.null(fixed_tree)) {
+      tr <- pratchet(dat, maxit = pratchet_iter)
+    } else {
+      tr <- fixed_tree
+    }
+    parsimony(tr, dat)
+  }
+
+# ----- observed statistic -----
+# Combined tree length: use precomputed if given
+  if (!is.null(tree_comb)) {
+    if (!inherits(tree_comb, "phylo"))
+      stop("tree_comb must be a 'phylo' object.")
+    TL_comb <- mp_tree_length(aln_bin, fixed_tree = tree_comb)
+  } else {
+    TL_comb <- mp_tree_length(aln_bin, pratchet_iter)
+  }
+
+  # Sum of MP lengths from separate partitions (each optimized separately)
+  TL_sep <- sum(sapply(parts, function(p)
+    mp_tree_length(aln_bin[, p, drop = FALSE], pratchet_iter)))
+
+  stat_obs <- TL_sep - TL_comb
+  if (!quiet) cat(sprintf("Observed (TL_sep - TL_comb) = %.3f\n", stat_obs))
+
+# ----- permutation test -----
+  all_sites <- unlist(parts, use.names = FALSE)
+  null_vals <- numeric(nperm)
+  pb <- if (!quiet) txtProgressBar(min = 0, max = nperm, style = 3) else NULL
+
+  for (i in seq_len(nperm)) {
+    perm <- sample(all_sites, length(all_sites), replace = FALSE)
+    # repartition
+    idx_list <- vector("list", length(sizes))
+    start <- 1
+    for (k in seq_along(sizes)) {
+      idx_list[[k]] <- perm[start:(start + sizes[k] - 1)]
+      start <- start + sizes[k]
+    }
+# recompute TL_sep_perm
+    TL_sep_perm <- sum(sapply(idx_list, function(p)
+      mp_tree_length(aln_bin[, p, drop = FALSE], pratchet_iter)))
+    null_vals[i] <- TL_sep_perm - TL_comb
+    if (!quiet) setTxtProgressBar(pb, i)
+  }
+  if (!quiet) close(pb)
+
+  # Right-tailed p-value as in PAUP*: proportion of permuted >= observed
+  
+  p_val <- (sum(null_vals >= stat_obs) + 1) / (nperm + 1)
+
+  out <- list(stat_obs = stat_obs, null = null_vals, p_value = p_val,
+              TL_sep = TL_sep, TL_comb = TL_comb,
+              nperm = nperm, sizes = sizes,
+              tree_comb = tree_comb)
+  class(out) <- "ILDdnabin"
+  out
+}
+
+# Pretty print
+print.ILDdnabin <- function(x, ...) {
+  cat("ILD (DNAbin) permutation test\n")
+  cat(sprintf("  Observed: TL_sep - TL_comb = %.3f\n", x$stat_obs))
+  cat(sprintf("  Permutations: %d\n", x$nperm))
+  cat(sprintf("  p-value (right-tailed): %.4f\n", x$p_value))
+  invisible(x)
+}
+
+# Quick plot for the null distribution
+plot.ILDdnabin <- function(x, ...) {
+  hist(x$null, breaks = "FD", main = "ILD null distribution",
+       xlab = "TL_sep_perm - TL_comb", col = "grey80", border = "white")
+  abline(v = x$stat_obs, col = "red", lwd = 2)
+  mtext(sprintf("Observed = %.3f; p = %.4f", x$stat_obs, x$p_value), col = "red", line = 0.5)
+}
+
+
+#' 
+#' 1. We will read the alignment into a `DNAbin` object because `phyDat` format condenses the columns by patterns, which makes it difficult to assign original partitions
+#' 
+## ----read alignment as DNAbin------------------------------------------------------------------------
+aln_bin <- read.dna("ParALL153.fas", format = "fasta")
+
+#' 
+#' 2. If we already inferred the most parsimonious tree for the overall alignment, we can just use the information.
+#' 
+## ----------------------------------------------------------------------------------------------------
+mp_tree_comb <- parsimony(parachtes_tre,parachtes)
+
+#' 
+#' or, alternatively we could recalculate the tree length for the combined data matrix via pratchet()
+#' 
+## ----------------------------------------------------------------------------------------------------
+#dat_full <- as.phyDat(aln_bin)
+#mp_tree_comb <- pratchet(dat_full, maxit = 100)
+
+#' 
+#' 3. We will define partitions by ORIGINAL column indices (must cover all columns). In this example, we will compare the mtDNA genes (COI, 12S, 16S, which correspond to the first 2731 positions) versus the nuc genes (18S, 28S, H3)
+#' 
+## ----include=FALSE-----------------------------------------------------------------------------------
+L <- ncol(aln_bin); L
+parts <- list(
+  gene1 = 1:2731,
+  gene2 = 2732:L
+)
+
+#' 
+#' 4. We can now run the ILD test. Note that we have to define the number of permutations (nperm); the more, the better—usually 1000 is the minimum. However, in this example, to avoid spending too much time, we will only run 100 permutations (99 plus the observed partition lengths).
+#' 
+## ----Run ILD test, include=FALSE---------------------------------------------------------------------
+set.seed(123)
+res <- ild_test_dnabin(aln_bin, parts, nperm = 99, pratchet_iter = 50, quiet = FALSE)
+
+#' 
+#' 5. We can now inspect the results
+#' 
+## ----------------------------------------------------------------------------------------------------
+print(res)
+plot(res)
+
+#' 
+#' 
+#' 
 #' # Exercises
 #' 
-#' Find the most parsimonious tree, considering gaps as absence/presence. Properly root the tree and report the tree, indicating the number of steps (length). Assess the node support using Jackknife.
+#' Find the most parsimonious tree, considering gaps as absence/presence. Properly root the tree and report the tree, indicating the number of steps (length). Assess the node support using Jackknife. Finally, test if the moleculars and the recoded gap partitions are congruent.
 #' 
 #' In the CV, use the task option to submit your answer
 #' 
 #' 
 #' ### Session info
 #' 
-## ----sessionInfo, echo=FALSE-----------------------------------------------------------------------------------------------------------------------------------------------------
+## ----sessionInfo, echo=FALSE-------------------------------------------------------------------------
 sessionInfo()
 

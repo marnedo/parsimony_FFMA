@@ -563,22 +563,46 @@ some data, bundled with the package, for the next steps. In this
 example, we will investigate the phylogenetic relationships of
 <em>Parachtes</em> a genus belonging to the spider family Dysderidae by
 using a concatenated matrix of 6 mtDNA genes, namely cox1, nad1, 16S and
-12S and 3 nuclear genes, 18S, 28S and Histone3, obtained from Genbank.
-The following code loads the data:</p>
+12S and 3 nuclear genes, 18S, 28S and Histone3, obtained from
+Genbank.</p>
+<p>The following code loads the data as phyDat object:</p>
 <pre class="r"><code># get parachtes data
 parachtes &lt;- read.phyDat(&quot;ParALL153.fas&quot;, format = &quot;fasta&quot;)</code></pre>
 <div id="tree-search" class="section level2">
 <h2>Tree search</h2>
-<p>There are three different search strategies: 1. Exhaustive search
-(sometimes also referred as implicit enumeration, e.g. in TNT): It does
-guarantee the shortest tree, but there is usually a taxa limit,
-depending on the program used (~15). In the case of <code>phagorn</code>
-the usage would be
-<code>bab(data, tree = NULL, trace = 0, ...)&#39; 2. Heuristic search: does not guarantee finding the shortest tree. It usually consists on two rounds, first you build a tree (you can use different strategies, e.g. random addition of taxa, Wagner tree,..), followed by branch swapping, which algorithms that exchnge bracnhes of the starting tree looking for shorter trees (from lighter to thorougher rearrangements: NNi, SPR, TBR). In</code>phangorn<code>, you can use</code>random.addition<code>to compute a starting trees. The function</code>optim.parsimony<code>performs tree rearrangements to find trees with a lower parsimony score. The tree rearrangements implemented are nearest-neighbor interchanges (NNI) and subtree pruning and regrafting (SPR). The latter so far only works with the fitch algorithm. We iterate this procedures many timoes (e.g.&gt;100)  3. New search strategies: these are optimised algorithm for heuristic searchers of large data matrices (e.g. &gt;100 taxa). There are several strategies here. In this practical, we will implement parsimony ratchet. The function is</code>pratchet`,
-an implementation of the parsimony ratchet (Nixon 1999). This allows to
+<p>There are three different search strategies:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Exhaustive search</strong> (sometimes also referred as
+implicit enumeration, e.g. in TNT): It does guarantee the shortest tree,
+but there is usually a taxa limit, depending on the program used (~15).
+In the case of <code>phagorn</code> the usage would be
+<code>bab(data, tree = NULL, trace = 0, ...)</code></li>
+</ol>
+<p>2.<strong>Heuristic search</strong>: does not guarantee finding the
+shortest tree. It usually consists of two rounds: (1) you build a tree
+(using different strategies, e.g., random addition of taxa, Wagner tree,
+etc.), (2) you conduct <em>branch swapping</em>, an algorithm that
+exchange branches of the initial tree to look for shorter trees. There
+are different branch swapping strategies, ranging from lighter to more
+thorough rearrangements: <code>NNi</code>,<code>SPR</code>,
+<code>TBR</code>. In <code>phangorn</code>, you can use
+<code>random.addition</code> to compute a starting tree. The function
+<code>optim.parsimony</code> performs tree rearrangements to find trees
+with a lower parsimony score. The tree rearrangements implemented are
+nearest-neighbor interchanges (<code>NNI</code>) and subtree pruning and
+regrafting (<code>SPR</code>). The latter so far only works with the
+Fitch algorithm. We iterate these procedures many times (e.g., more than
+100).</p>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>New search strategies</strong>: these are optimised
+algorithm for heuristic searchers of large data matrices (e.g. &gt;100
+taxa). There are several strategies In this practical, we will implement
+<em>parsimony ratchet</em>. The function is <code>pratchet</code>, an
+implementation of the parsimony ratchet (Nixon 1999). This allows to
 escape local optima and find better trees than only performing NNI / SPR
-rearrangements.</p>
-<p>The current implementation is</p>
+rearrangements.</li>
+</ol>
+<p>The current implementation is:</p>
 <ol style="list-style-type: decimal">
 <li>Create a bootstrap data set 𝐷𝑏from the original data set.</li>
 <li>Take the current best tree and perform tree rearrangements on 𝐷𝑏and
@@ -590,13 +614,6 @@ replace it.</li>
 (minit) or no improvements have been recorded for a number of iterations
 (k).</li>
 </ol>
-<pre class="r"><code># search for the most parsimonious (MP) tree
-treeRatchet  &lt;- pratchet(parachtes, start = NULL, method = &quot;fitch&quot;,  minit = 100, k = 10, trace = 1, all = TRUE, rearrangements = &quot;SPR&quot;, perturbation = &quot;ratchet&quot;)
-#&gt; Parsimony score of initial tree: 7893 
-#&gt; Iteration: 10. Best parsimony score so far: 7893Iteration: 20. Best parsimony score so far: 7893Iteration: 30. Best parsimony score so far: 7893Iteration: 40. Best parsimony score so far: 7893Iteration: 50. Best parsimony score so far: 7893Iteration: 60. Best parsimony score so far: 7893Iteration: 70. Best parsimony score so far: 7893Iteration: 80. Best parsimony score so far: 7893Iteration: 90. Best parsimony score so far: 7893Iteration: 100. Best parsimony score so far: 7893
-#to report the number of steps
-parsimony(treeRatchet, parachtes)
-#&gt; [1] 7893</code></pre>
 <p>Now that we have inferred the MP tree, we should plot it to have a
 look.</p>
 <pre class="r"><code># plot MP tree
@@ -613,7 +630,7 @@ unrooted using the <code>is.rooted()</code> function.</p>
 is.rooted(treeRatchet)</code></pre>
 <p>We can also set a root on our tree, if we know what we should set the
 outgroup to. In our case, we can set our outgroup to
-Segestria_sp_k200.</p>
+<strong>Segestria_sp_k200</strong>.</p>
 <p>We will set the root of our tree using the <code>root</code> function
 and we’ll then plot it to see how it looks.</p>
 <pre class="r"><code># plot treeRatchet rooted
@@ -634,7 +651,7 @@ wanted to also include the number of substitution in each branch
 (i.e. branch length), we have to do the following:</p>
 <pre class="r"><code># perform character optimization
 treeRatchet_r&lt;-acctran(treeRatchet_r, parachtes)</code></pre>
-<p>This funciton assaigns edge weights. We now plot the tree with the
+<p>This function assigns edge weights. We now plot the tree with the
 corresponding branch length information:</p>
 <pre class="r"><code># plot the rooted tree with branch lengths
 plot(treeRatchet_r, type=&quot;phylogram&quot;, no.margin = TRUE)
@@ -650,19 +667,20 @@ write.tree(treeRatchet_r, &quot;parachtes.tre&quot;)</code></pre>
 </div>
 <div id="consensus-tree" class="section level3">
 <h3>Consensus tree</h3>
-<p>Let’s generate a new tree use random addition of taaxa, and a second
-one optimizing the first one with SPR swapper:</p>
-<pre class="r"><code># heuristic search using random addiiton of taxa
-treeRA &lt;- random.addition(parachtes)
-treeSPR  &lt;- optim.parsimony(treeRA, parachtes)
-#&gt; Final p-score 7893 after  1 nni operations</code></pre>
+<p>Sometimes we find more than one equally parsimonious tree. In those
+cases, we usually calculate the strict consensus tree, which helps
+visualize the conflict among the best trees. In our case, we found one
+single shortest tree, but we can pretend to have a second one by
+generating a new tree using random addition of taxa, which is generally
+suboptimal, and a second one optimizing the first with an SPR
+swapper.</p>
 <p>Let’s compare the legth of the two former trees</p>
 <pre class="r"><code># compare the length of the trees
 parsimony(c(treeRA, treeSPR), parachtes)
 #&gt; [1] 7894 7893</code></pre>
 <p>To find out what are the topological differences of the two trees, we
-can look at the consensus from treeRA and treeSPR, using the command
-<code>consensus</code> function from <code>ape</code>.</p>
+can look at the strict consensus from treeRA and treeSPR, using the
+command <code>consensus</code> function from <code>ape</code>.</p>
 <pre class="r"><code>#combines both trees into a single object
 obj&lt;-c(treeRA, treeSPR)
 # Calculate and plot the consensus tree
@@ -690,7 +708,8 @@ parachtes_5&lt;-gap_as_state(parachtes, gap = &quot;-&quot;, ambiguous = c(&quot
 absence/presence character, following the simple coding method proposed
 by Simmons &amp; Ochoterena. 2000. We will. use the
 <code>ìps</code>package command <code>code.simple.gaps</code>. Note that
-the gapped positions are excluded from the matrix.</p>
+the gapped positions are excluded from the matrix, and therefore the new
+matrix would have a different number of characters</p>
 <pre class="r"><code>#First, we will transform our parachtes matrix from a phyDat class object to a DNAbin class object
 parachtes_DNAbin&lt;-as.DNAbin(parachtes)
 #Now we car recode the gaps as absence/presence data
@@ -795,6 +814,8 @@ parachtes_DNAbin_ap&lt;-code.simple.gaps(parachtes_DNAbin)
 #&gt; [1] 4304
 #Finally, we will transform the new matrix with the recoded gaps back into a phyDat object
 parachtes_ap&lt;-as.phyDat(parachtes_DNAbin_ap)</code></pre>
+<p>THe new coding has generated 33 additional characters, and has
+removed 42 positions of the original 4398</p>
 </div>
 <div id="node-support" class="section level2">
 <h2>Node support</h2>
@@ -804,49 +825,19 @@ the shortest tree or best explaining the data given a specific
 evolutionary model. However, we may need to assess the impact of
 character undersampling (random error) on our results. Specifically, we
 want to determine the support for the nodes recovered in the preferred
-tree(s). One way to do this is by using resampling techniques. These
-techniques involve generating pseudoreplicates (ideally &gt;100) of our
-original matrix either by resampling characters with repetition
-(bootstrap) or by randomly removing a proportion of the original matrix
-(Jaccknife). For each matrix, we find the best tree(s). Finally, we
-determine the node support by estimating the proportion of time that
-each node is recovered in the resampled trees. We will estimate node
-support using resampling with the package <code>TreeSearch</code>.</p>
+tree(s). One way to do this is by using <strong>resampling
+techniques</strong>.</p>
+<p>These techniques involve generating pseudoreplicates (ideally
+&gt;100) of our original matrix either by resampling characters with
+repetition (<em>bootstrap</em>) or by randomly removing a proportion of
+the original matrix (<em>Jaccknife</em>). For each matrix, we find the
+best tree(s). Finally, we determine the node support by estimating the
+proportion of time that each node is recovered in the resampled trees.
+We will estimate node support using resampling with the package
+<code>TreeSearch</code>.</p>
 <p>The package includes a more intensive version of the parsimony
 ratchet strategy for estimating the most parsimonious tree. we will
 first implement this strategy using the follwoing commands:</p>
-<pre class="r"><code># An heuristic search using parsimony ratchet (Nixon, 1999)
-parachtes_tre &lt;- MaximizeParsimony(parachtes, ratchIter = 100, startIter = 2,
-                           tbrIter = 2, maxHits = 4, maxTime = 1/100, verbosity = 4)
-parachtes_tre_r &lt;- root(parachtes_tre, &quot;Segestria_sp_k200&quot;, resolve.root = TRUE, edgelabel = TRUE)
-firstHit &lt;- attr(parachtes_tre, &quot;firstHit&quot;)
-firstHit
-#&gt;     seed    start   ratch1   ratch2   ratch3   ratch4   ratch5   ratch6 
-#&gt;        0        2        0        0        0        0        0        0 
-#&gt;   ratch7   ratch8   ratch9  ratch10  ratch11  ratch12  ratch13  ratch14 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch15  ratch16  ratch17  ratch18  ratch19  ratch20  ratch21  ratch22 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch23  ratch24  ratch25  ratch26  ratch27  ratch28  ratch29  ratch30 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch31  ratch32  ratch33  ratch34  ratch35  ratch36  ratch37  ratch38 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch39  ratch40  ratch41  ratch42  ratch43  ratch44  ratch45  ratch46 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch47  ratch48  ratch49  ratch50  ratch51  ratch52  ratch53  ratch54 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch55  ratch56  ratch57  ratch58  ratch59  ratch60  ratch61  ratch62 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch63  ratch64  ratch65  ratch66  ratch67  ratch68  ratch69  ratch70 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch71  ratch72  ratch73  ratch74  ratch75  ratch76  ratch77  ratch78 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch79  ratch80  ratch81  ratch82  ratch83  ratch84  ratch85  ratch86 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch87  ratch88  ratch89  ratch90  ratch91  ratch92  ratch93  ratch94 
-#&gt;        0        0        0        0        0        0        0        0 
-#&gt;  ratch95  ratch96  ratch97  ratch98  ratch99 ratch100    final 
-#&gt;        0        0        0        0        0        0        0</code></pre>
 <div id="node-support-based-on-jaccknife-resampling" class="section level3">
 <h3>Node support based on Jaccknife resampling</h3>
 <p>We will now estimate the node support using Jackknife. This is
@@ -896,13 +887,166 @@ JackLabels(parachtes_tre_r[[1]], jackTrees_consensus_r,add=TRUE)</code></pre>
 #&gt; 0.8 1.0 0.6 0.4 1.0 0.9 1.0 1.0 1.0 1.0 1.0</code></pre>
 </div>
 </div>
+<div id="test-congruence-among-data-partitions-via-ild-test" class="section level2">
+<h2>Test congruence among data partitions via ILD test</h2>
+<p>There is currently no R function to perform the ILD test in any R
+package. We will create a function (ild_test_dnabin) using the following
+R script:</p>
+<pre class="r"><code>
+# Main ILD (Farris PHT) style test:
+# - aln_bin: DNAbin alignment (rows = taxa, cols = sites; same taxa order across all sites)
+# - parts: named list of integer vectors of site indices (original column positions)
+# - nperm: number of permutations (e.g., 99, 199, 999)
+# - pratchet_iter: iterations for MP search (balance speed/quality)
+# Returns observed stat, null distribution, and p-value.
+  
+ild_test_dnabin &lt;- function(aln_bin, parts, nperm = 99, seed = 1,
+                            pratchet_iter = 50, tree_comb = NULL, quiet = FALSE) {
+  set.seed(seed)
+
+# ----- checks -----
+  if (!inherits(aln_bin, &quot;DNAbin&quot;))
+    stop(&quot;aln_bin must be DNAbin (use ape::read.dna).&quot;)
+
+  L &lt;- ncol(aln_bin)
+  if (is.null(L) || L &lt; 2) stop(&quot;Alignment must have &gt;= 2 sites.&quot;)
+  if (!is.list(parts) || length(parts) &lt; 2)
+    stop(&quot;Provide &gt;= 2 partitions in &#39;parts&#39;.&quot;)
+
+  sizes &lt;- vapply(parts, length, 1L)
+  if (sum(sizes) != L) {
+    stop(sprintf(&quot;Sum of partition sizes (%d) != alignment length (%d).&quot;, sum(sizes), L))
+  }
+
+# Bounds check
+  max_idx &lt;- max(unlist(parts))
+  min_idx &lt;- min(unlist(parts))
+  if (min_idx &lt; 1 || max_idx &gt; L) {
+    stop(sprintf(&quot;Partition indices out of bounds: allowed 1..%d, got [%d..%d].&quot;, L, min_idx, max_idx))
+  }
+
+  # Helper for MP length
+  mp_tree_length &lt;- function(aln_bin, pratchet_iter = 50, fixed_tree = NULL) {
+    dat &lt;- as.phyDat(aln_bin)
+    if (is.null(fixed_tree)) {
+      tr &lt;- pratchet(dat, maxit = pratchet_iter)
+    } else {
+      tr &lt;- fixed_tree
+    }
+    parsimony(tr, dat)
+  }
+
+# ----- observed statistic -----
+# Combined tree length: use precomputed if given
+  if (!is.null(tree_comb)) {
+    if (!inherits(tree_comb, &quot;phylo&quot;))
+      stop(&quot;tree_comb must be a &#39;phylo&#39; object.&quot;)
+    TL_comb &lt;- mp_tree_length(aln_bin, fixed_tree = tree_comb)
+  } else {
+    TL_comb &lt;- mp_tree_length(aln_bin, pratchet_iter)
+  }
+
+  # Sum of MP lengths from separate partitions (each optimized separately)
+  TL_sep &lt;- sum(sapply(parts, function(p)
+    mp_tree_length(aln_bin[, p, drop = FALSE], pratchet_iter)))
+
+  stat_obs &lt;- TL_sep - TL_comb
+  if (!quiet) cat(sprintf(&quot;Observed (TL_sep - TL_comb) = %.3f\n&quot;, stat_obs))
+
+# ----- permutation test -----
+  all_sites &lt;- unlist(parts, use.names = FALSE)
+  null_vals &lt;- numeric(nperm)
+  pb &lt;- if (!quiet) txtProgressBar(min = 0, max = nperm, style = 3) else NULL
+
+  for (i in seq_len(nperm)) {
+    perm &lt;- sample(all_sites, length(all_sites), replace = FALSE)
+    # repartition
+    idx_list &lt;- vector(&quot;list&quot;, length(sizes))
+    start &lt;- 1
+    for (k in seq_along(sizes)) {
+      idx_list[[k]] &lt;- perm[start:(start + sizes[k] - 1)]
+      start &lt;- start + sizes[k]
+    }
+# recompute TL_sep_perm
+    TL_sep_perm &lt;- sum(sapply(idx_list, function(p)
+      mp_tree_length(aln_bin[, p, drop = FALSE], pratchet_iter)))
+    null_vals[i] &lt;- TL_sep_perm - TL_comb
+    if (!quiet) setTxtProgressBar(pb, i)
+  }
+  if (!quiet) close(pb)
+
+  # Right-tailed p-value as in PAUP*: proportion of permuted &gt;= observed
+  
+  p_val &lt;- (sum(null_vals &gt;= stat_obs) + 1) / (nperm + 1)
+
+  out &lt;- list(stat_obs = stat_obs, null = null_vals, p_value = p_val,
+              TL_sep = TL_sep, TL_comb = TL_comb,
+              nperm = nperm, sizes = sizes,
+              tree_comb = tree_comb)
+  class(out) &lt;- &quot;ILDdnabin&quot;
+  out
+}
+
+# Pretty print
+print.ILDdnabin &lt;- function(x, ...) {
+  cat(&quot;ILD (DNAbin) permutation test\n&quot;)
+  cat(sprintf(&quot;  Observed: TL_sep - TL_comb = %.3f\n&quot;, x$stat_obs))
+  cat(sprintf(&quot;  Permutations: %d\n&quot;, x$nperm))
+  cat(sprintf(&quot;  p-value (right-tailed): %.4f\n&quot;, x$p_value))
+  invisible(x)
+}
+
+# Quick plot for the null distribution
+plot.ILDdnabin &lt;- function(x, ...) {
+  hist(x$null, breaks = &quot;FD&quot;, main = &quot;ILD null distribution&quot;,
+       xlab = &quot;TL_sep_perm - TL_comb&quot;, col = &quot;grey80&quot;, border = &quot;white&quot;)
+  abline(v = x$stat_obs, col = &quot;red&quot;, lwd = 2)
+  mtext(sprintf(&quot;Observed = %.3f; p = %.4f&quot;, x$stat_obs, x$p_value), col = &quot;red&quot;, line = 0.5)
+}
+</code></pre>
+<ol style="list-style-type: decimal">
+<li>We will read the alignment into a <code>DNAbin</code> object because
+<code>phyDat</code> format condenses the columns by patterns, which
+makes it difficult to assign original partitions</li>
+</ol>
+<pre class="r"><code>aln_bin &lt;- read.dna(&quot;ParALL153.fas&quot;, format = &quot;fasta&quot;)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>If we already inferred the most parsimonious tree for the overall
+alignment, we can just use the information.</li>
+</ol>
+<pre class="r"><code>mp_tree_comb &lt;- parsimony(parachtes_tre,parachtes)</code></pre>
+<p>or, alternatively we could recalculate the tree length for the
+combined data matrix via pratchet()</p>
+<pre class="r"><code>#dat_full &lt;- as.phyDat(aln_bin)
+#mp_tree_comb &lt;- pratchet(dat_full, maxit = 100)</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li><p>We will define partitions by ORIGINAL column indices (must cover
+all columns). In this example, we will compare the mtDNA genes (COI,
+12S, 16S, which correspond to the first 2731 positions) versus the nuc
+genes (18S, 28S, H3)</p></li>
+<li><p>We can now run the ILD test. Note that we have to define the
+number of permutations (nperm); the more, the better—usually 1000 is the
+minimum. However, in this example, to avoid spending too much time, we
+will only run 100 permutations (99 plus the observed partition
+lengths).</p></li>
+<li><p>We can now inspect the results</p></li>
+</ol>
+<pre class="r"><code>print(res)
+#&gt; ILD (DNAbin) permutation test
+#&gt;   Observed: TL_sep - TL_comb = -14.000
+#&gt;   Permutations: 99
+#&gt;   p-value (right-tailed): 0.4200
+plot(res)</code></pre>
+<p><img role="img" src="data:image/png;base64,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ChRL6dk4GQIIpJ3Azz//LNdcc42p9/nnny+DBg2S3Nxcueqqq8y2xo0by+23317gdW3ZskV69uyZL0+JEiXksMMOk1atWsnAgQOlTJky+fKkesOjjz4qU6dONaedMWOGZGVlyebNm+Wyyy4z2/r27StXXHHFQVcrsIzLL79c+vfvn5BynYqsWrVKKleuLBUrVnQ2RXwNrEvg9dx6660yf/58qVKliowfPz7i8Yeyw+fzybJly+SEE07wFxPO3L+TBQQQyEgBAtCMvK1cFAKJE9i9e7d88sknpsBGjRqZV6/XK6+99ppZ/sc//hE1AN2/f7+/jHA1e+utt+Tpp5+W559/Xjp16hQuS8q2LV++3F9Xy7LMefft2+ff1rZt27jqElhGu3btElbunj175KGHHpLHH39cli5dGlMAGliXwOtZtGiRuc7q1avHdY3RDvryyy/ln//8p+jv0dixY/3Zw5n7d7KAAAIZKUAAmpG3lYtCwL0CDRo0MEGmtqJq8PTVV1+JtrKuWbNGLrroIvnhhx+kVq1a7r2ABNZMW3y7detmStSW5HjSY489Jg8++OBBHZqI8x7UCf/K7AS7zgcZp4wTTzxRtm/fblY9Ho+zmVcEEMhgAQLQDL65XBoCbhRo0aKFae106qatqffcc4+MHDnSBKRDhgyRN99809kd06u2VK5du1a05U4f67sladeD7Oxs82g8XJ2OOOIIeffdd8PtMts0SN+wYYOoUbVq1Q6pi8Iff/xhuhOUL19eop03sEJ6fn2sX65cucDNCV3WVlH9KSippXaH0O4BsaadO3ea36lktejGWg/yIYBAfgEGIeU3YQsCCKRQQAO0ESNGiLaManr77bdFHxFHSr/88osJhjQg+uCDD2T48OEmoKpTp45ocKX9M7Vl1UnfffedP/+TTz7pbDav+rhfyznuuOOCth/qinZZaNiwoVStWlUOP/xwOeWUU2TFihX5il23bp2/bvfff79/v/bR1H6ipUuXFr2u+vXrm3xnnXWW6DFO0hbjwNZP7VfpBFvnnXeeOebCCy+UUaNGmcBNgzcN9COd1ylXX6dPny61a9c2rdEagLZv3960VDt5DsZV+5UGBrDa5ULXtduFpuuuu86s6zYNtp30559/msBUW4cdS20df+KJJ0T7kgamq6++2pShrazaiq7mlSpVkho1ahhDvR4SAgi4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" /><!-- --></p>
+</div>
 </div>
 <div id="exercises" class="section level1">
 <h1>Exercises</h1>
 <p>Find the most parsimonious tree, considering gaps as
 absence/presence. Properly root the tree and report the tree, indicating
-the number of steps (length). Assess the node support using
-Jackknife.</p>
+the number of steps (length). Assess the node support using Jackknife.
+Finally, test if the moleculars and the recoded gap partitions are
+congruent.</p>
 <p>In the CV, use the task option to submit your answer</p>
 <div id="session-info" class="section level3">
 <h3>Session info</h3>
@@ -924,10 +1068,10 @@ Jackknife.</p>
 #&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
 #&gt; 
 #&gt; other attached packages:
-#&gt;  [1] TreeSearch_1.6.0 ips_0.0.12       phangorn_2.12.1  ape_5.8-1       
-#&gt;  [5] lubridate_1.9.4  forcats_1.0.0    stringr_1.5.1    dplyr_1.1.4     
-#&gt;  [9] purrr_1.0.4      readr_2.1.5      tidyr_1.3.1      tibble_3.2.1    
-#&gt; [13] ggplot2_3.5.2    tidyverse_2.0.0 
+#&gt;  [1] lubridate_1.9.4  forcats_1.0.0    stringr_1.5.1    dplyr_1.1.4     
+#&gt;  [5] purrr_1.0.4      readr_2.1.5      tidyr_1.3.1      tibble_3.2.1    
+#&gt;  [9] ggplot2_3.5.2    tidyverse_2.0.0  TreeSearch_1.6.0 ips_0.0.12      
+#&gt; [13] phangorn_2.12.1  ape_5.8-1       
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
 #&gt;  [1] tidyselect_1.2.1    farver_2.1.2        R.utils_2.13.0     
@@ -948,8 +1092,8 @@ Jackknife.</p>
 #&gt; [46] parallel_4.4.1      matrixStats_1.5.0   vctrs_0.6.5        
 #&gt; [49] Matrix_1.7-3        TreeDist_2.9.2      jsonlite_2.0.0     
 #&gt; [52] hms_1.1.3           bit64_4.6.0-1       listenv_0.9.1      
-#&gt; [55] protoclust_1.6.4    jquerylib_0.1.4     parallelly_1.44.0  
-#&gt; [58] glue_1.8.0          codetools_0.2-20    stringi_1.8.7      
+#&gt; [55] protoclust_1.6.4    jquerylib_0.1.4     glue_1.8.0         
+#&gt; [58] parallelly_1.44.0   codetools_0.2-20    stringi_1.8.7      
 #&gt; [61] gtable_0.3.6        later_1.4.2         quadprog_1.5-8     
 #&gt; [64] pillar_1.10.2       htmltools_0.5.8.1   R6_2.6.1           
 #&gt; [67] zigg_0.0.2          Rdpack_2.6.4        evaluate_1.0.3     
