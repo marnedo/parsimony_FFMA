@@ -3,12 +3,12 @@ title: "Intro and parsimony exercises FFMA"
 author: "Miquel Arnedo"
 date: "`r format(Sys.Date(), '%d %B %Y')`"
 output:
+  html_document:
+    keep_md: true
   pdf_document:
     latex_engine: xelatex
     toc: true
     toc_depth: 2
-  html_document:
-    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
